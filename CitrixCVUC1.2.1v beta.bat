@@ -1,9 +1,9 @@
 @echo off 
 del "%TMP%\*.sql" "%TMP%\*.log" >nul
-echo MCS VM Changer v1.2.1 Beta
-title MCS VM Changer v1.2.1 Beta
+echo Citrix CVAD VDI UUID Changer v1.2.1 Beta
+title Citrix CVAD VDI UUID Changer v1.2.1 Beta
 set salist=0
-:: Citrix MCS VM UUIDº¯°æ Åø
+:: Citrix MCS VM UUIDë³€ê²½ íˆ´
 
 IF EXIST config.conf (
 goto ODBC
@@ -17,30 +17,30 @@ cls
 if %computername%==%userdomain% goto main
 set indb=x
 set dbport=1433
-echo MVC ÃÊ±â±¸¼º Config ±¸¼º 
-echo ±¸¼º ¿Ï·á ½Ã MVC.bat °æ·Î¿¡ Config.conf ÆÄÀÏ »ı¼º
+echo MVC ì´ˆê¸°êµ¬ì„± Config êµ¬ì„± 
+echo êµ¬ì„± ì™„ë£Œ ì‹œ MVC.bat ê²½ë¡œì— Config.conf íŒŒì¼ ìƒì„±
 echo.
-:: config ¼³Á¤ ------
+:: config ì„¤ì • ------
 
-:: DB¼­¹ö IP or µµ¸ŞÀÎ ¼³Á¤
-echo 1.DB¼­¹ö IP ÀÔ·Â
-set /p userDBip=ÀÔ·Â:
+:: DBì„œë²„ IP or ë„ë©”ì¸ ì„¤ì •
+echo 1.DBì„œë²„ IP ì…ë ¥
+set /p userDBip=ì…ë ¥:
 echo.
-:: DB¼­¹ö Æ÷Æ® ¼³Á¤
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p dbport=ÀÔ·Â:
+:: DBì„œë²„ í¬íŠ¸ ì„¤ì •
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p dbport=ì…ë ¥:
 echo.
-:: DB ½Ì±Û ¹× ºĞÇÒ ±¸¼º ¼±ÅÃ
+:: DB ì‹±ê¸€ ë° ë¶„í•  êµ¬ì„± ì„ íƒ
 :main
 set seldb=vm
 echo.
 :: echo %salist%
-echo 3. DB±¸¼º ¼±ÅÃ ¸Ş´º
-echo Citrix Controller¿¡ ¼³Á¤ µÈ DB»óÅÂ°¡ ½Ì±Û »óÅÂÀÎÁö Site/Monitoring/LoggingÀ¸·Î ºĞÇÒ ±¸¼º µÇ¾îÀÖ´ÂÁö ¼±ÅÃ
+echo 3. DBêµ¬ì„± ì„ íƒ ë©”ë‰´
+echo Citrix Controllerì— ì„¤ì • ëœ DBìƒíƒœê°€ ì‹±ê¸€ ìƒíƒœì¸ì§€ Site/Monitoring/Loggingìœ¼ë¡œ ë¶„í•  êµ¬ì„± ë˜ì–´ìˆëŠ”ì§€ ì„ íƒ
 echo.
-echo 1. ½Ì±Û ±¸¼º    2. ºĞÇÒ ±¸¼º   x. ³ª°¡±â  c.´Ù½Ã ÀÔ·Â
-set /p seldb=ÀÔ·Â:
+echo 1. ì‹±ê¸€ êµ¬ì„±    2. ë¶„í•  êµ¬ì„±   x. ë‚˜ê°€ê¸°  c.ë‹¤ì‹œ ì…ë ¥
+set /p seldb=ì…ë ¥:
 
 if %seldb%==vm goto derr
 if %seldb%==1 set dbcon=1 & goto input1
@@ -51,30 +51,30 @@ if %seldb%==c goto input
 if %seldb%==C goto input
 
 :derr
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
-echo Àß¸øµÈ °ªÀ¸·Î Ã³À½ È­¸éÀ¸·Î ´Ù½Ã µ¹¾Æ°©´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
+echo ì˜ëª»ëœ ê°’ìœ¼ë¡œ ì²˜ìŒ í™”ë©´ìœ¼ë¡œ ë‹¤ì‹œ ëŒì•„ê°‘ë‹ˆë‹¤.
 pause
 goto input
 
 :input1
-:: µµ¸ŞÀÎ Á¶ÀÎ ¿©ºÎ 
-:: ·ÎÄÃ È£½ºÆ®¿¡¼­ µµ¸ŞÀÎ Á¶ÀÎ»óÅÂ¿¡ µû¶ó DBÁ¶ÀÎ ¼öµ¿ÀÔ·ÂÀ¸·Î ÀÚµ¿ ÀüÈ¯
+:: ë„ë©”ì¸ ì¡°ì¸ ì—¬ë¶€ 
+:: ë¡œì»¬ í˜¸ìŠ¤íŠ¸ì—ì„œ ë„ë©”ì¸ ì¡°ì¸ìƒíƒœì— ë”°ë¼ DBì¡°ì¸ ìˆ˜ë™ì…ë ¥ìœ¼ë¡œ ìë™ ì „í™˜
 if %computername%==%userdomain% goto selc1
-:: DB ±¸¼º (½Ì±Û / ºĞÇÒ)
+:: DB êµ¬ì„± (ì‹±ê¸€ / ë¶„í• )
 echo.
-echo 3-1. ½Ì±Û DB ¼³Á¤
-set /p userDB=ÀÔ·Â:
+echo 3-1. ì‹±ê¸€ DB ì„¤ì •
+set /p userDB=ì…ë ¥:
 set userSiteDB=null
 set userMoDB=null
 goto input3
 
 :input2
-:: µµ¸ŞÀÎ Á¶ÀÎ ¿©ºÎ 
-:: ·ÎÄÃ È£½ºÆ®¿¡¼­ µµ¸ŞÀÎ Á¶ÀÎ»óÅÂ¿¡ µû¶ó DBÁ¶ÀÎ ¼öµ¿ÀÔ·ÂÀ¸·Î ÀÚµ¿ ÀüÈ¯
+:: ë„ë©”ì¸ ì¡°ì¸ ì—¬ë¶€ 
+:: ë¡œì»¬ í˜¸ìŠ¤íŠ¸ì—ì„œ ë„ë©”ì¸ ì¡°ì¸ìƒíƒœì— ë”°ë¼ DBì¡°ì¸ ìˆ˜ë™ì…ë ¥ìœ¼ë¡œ ìë™ ì „í™˜
 if %computername%==%userdomain% goto selc1
-echo 3-2. ºĞÇÒ DB ¼³Á¤ 
-set /p userSiteDB=ÀÔ·Â:
-set /p userMoDB=ÀÔ·Â:
+echo 3-2. ë¶„í•  DB ì„¤ì • 
+set /p userSiteDB=ì…ë ¥:
+set /p userMoDB=ì…ë ¥:
 
 :input3
 if %dbcon%==1 set singleDB=Enable
@@ -101,12 +101,12 @@ pause
 
 :install
 cls
-echo ÇöÀç È£½ºÆ®¿¡ SQL Server ODBC µå¶óÀÌ¹ö ¹× SQLCMDÀ¯Æ¿ÀÌ ¼³Ä¡ µÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.
+echo í˜„ì¬ í˜¸ìŠ¤íŠ¸ì— SQL Server ODBC ë“œë¼ì´ë²„ ë° SQLCMDìœ í‹¸ì´ ì„¤ì¹˜ ë˜ì–´ìˆì§€ ì•ŠìŠµë‹ˆë‹¤.
 echo.
-echo ´ÙÀ½ URL¿¡¼­ ¼³Ä¡ ÈÄ ÁøÇà¹Ù¶ø´Ï´Ù.
-echo ODBC µå¶óÀÌ¹ö : https://docs.microsoft.com/ko-kr/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15
+echo ë‹¤ìŒ URLì—ì„œ ì„¤ì¹˜ í›„ ì§„í–‰ë°”ëë‹ˆë‹¤.
+echo ODBC ë“œë¼ì´ë²„ : https://docs.microsoft.com/ko-kr/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15
 echo.
-echo sqlcmd À¯Æ¿ : https://docs.microsoft.com/ko-kr/sql/tools/sqlcmd-utility?view=sql-server-ver15
+echo sqlcmd ìœ í‹¸ : https://docs.microsoft.com/ko-kr/sql/tools/sqlcmd-utility?view=sql-server-ver15
 
 pause
 
@@ -125,26 +125,26 @@ for /f "tokens=2" %%i in ('findstr "userMoDB" config.conf') do set userMoDB=%%i
 if %singleDB%==Enable set dbcon=1
 if %singleDB%==Disable set dbcon=2
 set sel=vm
-if %dbcon%==1 set bsel=½Ì±Û
-if %dbcon%==2 set bsel=ºĞÇÒ
-if %salist%==0 set dbuserauto=ÀÚµ¿
-if %salist%==1 set dbuserauto=¼öµ¿
+if %dbcon%==1 set bsel=ì‹±ê¸€
+if %dbcon%==2 set bsel=ë¶„í• 
+if %salist%==0 set dbuserauto=ìë™
+if %salist%==1 set dbuserauto=ìˆ˜ë™
 cls
 :: echo %salist%
-echo VM UUID,Pool ÄÁ³Ø¼Ç º¯°æ ¹× DB ±¸¼º º¯°æ ¸Ş´º
-echo ¿É¼Ç ¼±ÅÃ
+echo VM UUID,Pool ì»¨ë„¥ì…˜ ë³€ê²½ ë° DB êµ¬ì„± ë³€ê²½ ë©”ë‰´
+echo ì˜µì…˜ ì„ íƒ
 echo.
-echo ÇöÀç DB ±¸¼ºÀº( %bsel% )¹æ½ÄÀÔ´Ï´Ù. 
-echo DB °èÁ¤ ±¸¼ºÀº ( %dbuserauto% ) ¹æ½ÄÀÔ´Ï´Ù.
+echo í˜„ì¬ DB êµ¬ì„±ì€( %bsel% )ë°©ì‹ì…ë‹ˆë‹¤. 
+echo DB ê³„ì • êµ¬ì„±ì€ ( %dbuserauto% ) ë°©ì‹ì…ë‹ˆë‹¤.
 echo.
 echo.
-echo 1. VM_UUID º¯°æ    
-echo 2. VM_POOLÄÁ³Ø¼Ç º¯°æ  
-echo 3. Catalog Master VM ±³Ã¼  
-echo 4. DBÁ¶ÀÎ ¼öµ¿ÀÔ·Â    
-echo x. ³ª°¡±â
+echo 1. VM_UUID ë³€ê²½    
+echo 2. VM_POOLì»¨ë„¥ì…˜ ë³€ê²½  
+echo 3. Catalog Master VM êµì²´  
+echo 4. DBì¡°ì¸ ìˆ˜ë™ì…ë ¥    
+echo x. ë‚˜ê°€ê¸°
 echo.
-set /p sel=ÀÔ·Â:
+set /p sel=ì…ë ¥:
 
 if %sel%==vm goto err
 if %sel%==1 goto ch1
@@ -155,37 +155,37 @@ if %sel%==x exit
 if %sel%==X exit
 
 :err
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
 pause
 goto main2
 
 :ch1
-:: VM_UUID ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£ 
+:: VM_UUID êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„ 
 cls 
-echo 1. VM_UUID º¯°æ
+echo 1. VM_UUID ë³€ê²½
 echo.
-echo ÀÔ·Â ¿¹½Ã) 07324359-868a-6459-2b7c-21ca8dc1e20a
+echo ì…ë ¥ ì˜ˆì‹œ) 07324359-868a-6459-2b7c-21ca8dc1e20a
 echo.
-echo ÇöÀç VMÀÇ UUIDÀÔ·Â
-set /p useuuid=ÀÔ·Â:
+echo í˜„ì¬ VMì˜ UUIDì…ë ¥
+set /p useuuid=ì…ë ¥:
 
 echo.
 echo.
-echo ±³Ã¼ VMÀÇ UUIDÀÔ·Â
-set /p chuuid=ÀÔ·Â:
+echo êµì²´ VMì˜ UUIDì…ë ¥
+set /p chuuid=ì…ë ¥:
 
 echo SET QUOTED_IDENTIFIER ON > "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
 echo GO >> "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
-:: Monitoring DB º¯°æ ±¸°£
+:: Monitoring DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[MonitorData].[Machine] >> "%TMP%\MCS.sql"
 if %dbcon%==2 echo UPDATE [%userMoDB%].[MonitorData].[Machine] >> "%TMP%\MCS.sql"
 echo SET HostedMachineId = '%chuuid%' >> "%TMP%\MCS.sql"
 echo WHERE HostedMachineId = '%useuuid%' >> "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
 
-:: Site DB º¯°æ ±¸°£
+:: Site DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[Chb_Config].[Workers] >> "%TMP%\MCS.sql"
 if %dbcon%==2 echo UPDATE [%userSiteDB%].[Chb_Config].[Workers] >> "%TMP%\MCS.sql"
 echo SET HostedMachineId = '%chuuid%' >> "%TMP%\MCS.sql"
@@ -200,7 +200,7 @@ if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MCS.sql"
 if %salist%==1 sqlcmd -S %saip%,%saport% -U %sauser% -P "%sapass%" -i "%TMP%\MCS.sql"
 
 echo.
-echo MCS VMÀÌ ±âÁ¸ %useuuid%¿¡¼­ %chuuid%·Î º¯°æµÇ¾ú½À´Ï´Ù.
+echo MCS VMì´ ê¸°ì¡´ %useuuid%ì—ì„œ %chuuid%ë¡œ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.
 
 pause
 
@@ -209,16 +209,16 @@ del "%TMP%\MCS.sql"
 exit
 
 :ch2
-:: Pool ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£
+:: Pool êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„
 cls 
-echo 2. VM_POOLÄÁ³Ø¼Ç º¯°æ
+echo 2. VM_POOLì»¨ë„¥ì…˜ ë³€ê²½
 echo.
-echo ÀÔ·Â ¿¹½Ã) 07324359-868a-6459-2b7c-21ca8dc1e20a
+echo ì…ë ¥ ì˜ˆì‹œ) 07324359-868a-6459-2b7c-21ca8dc1e20a
 echo.
-echo Ç®±³Ã¼ ´ë»ó VMÀÇ UUIDÀÔ·Â
-set /p chuuid=ÀÔ·Â:
+echo í’€êµì²´ ëŒ€ìƒ VMì˜ UUIDì…ë ¥
+set /p chuuid=ì…ë ¥:
 echo.
-echo ¼±ÅÃµÈ VM¿¡ ÇöÀç µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú UidÈ®ÀÎ
+echo ì„ íƒëœ VMì— í˜„ì¬ ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € Uidí™•ì¸
 if %dbcon%==1 echo SELECT [HypervisorConnectionUid] FROM [%userDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%' > "%TMP%\vmpool.sql"
 if %dbcon%==2 echo SELECT [HypervisorConnectionUid] FROM [%userSiteDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%' > "%TMP%\vmpool.sql"
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\vmpool.sql" > "%TMP%\vmpool.log"
@@ -226,9 +226,9 @@ if %salist%==1 sqlcmd -S %saip%,%saport% -U %sauser% -P "%sapass%" -i "%TMP%\vmp
 type "%TMP%\vmpool.log" |findstr /v Hyper |findstr /v "^-" |findstr /v "(" > "%TMP%\script.log"
 set /p vmp=<"%TMP%\script.log"
 
-echo ÇöÀç VM¿¡ µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú Uid¹øÈ£ ´Â %vmp: =%¹ø ÀÔ´Ï´Ù.
+echo í˜„ì¬ VMì— ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € Uidë²ˆí˜¸ ëŠ” %vmp: =%ë²ˆ ì…ë‹ˆë‹¤.
 echo.
-echo DDCÈ£½ºÆÃ¿¡ µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú ¸ñ·Ï
+echo DDCí˜¸ìŠ¤íŒ…ì— ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € ëª©ë¡
 
 if %salist%==0 goto ch21 
 if %salist%==1 goto ch22 
@@ -244,9 +244,9 @@ if %dbcon%==2 sqlcmd -S %saip%,%saport% -U %sauser% -P "%sapass%" -Q "select sub
 goto ch3
 
 :ch3
-echo È­¸é¿¡ Ç¥½ÃµÈ ±³Ã¼ ÁøÇà ÇÒ ÇÏÀÌÆÛ¹ÙÀÌÀú Uid¹øÈ£ ÁöÁ¤ÇÏ±â
+echo í™”ë©´ì— í‘œì‹œëœ êµì²´ ì§„í–‰ í•  í•˜ì´í¼ë°”ì´ì € Uidë²ˆí˜¸ ì§€ì •í•˜ê¸°
 echo.
-set /p poolin=ÀÔ·Â:
+set /p poolin=ì…ë ¥:
 
 echo SET QUOTED_IDENTIFIER ON > "%TMP%\Pool.sql"
 echo. >> "%TMP%\Pool.sql"
@@ -263,7 +263,7 @@ echo.
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\Pool.sql"
 if %salist%==1 sqlcmd -S %saip%,%saport% -U %sauser% -P "%sapass%" -i "%TMP%\Pool.sql"
 
-echo %vmp: =%¹ø¿¡¼­ %poolin%¹ø Ç® º¯°æ ¿Ï·á!
+echo %vmp: =%ë²ˆì—ì„œ %poolin%ë²ˆ í’€ ë³€ê²½ ì™„ë£Œ!
 
 pause 
 
@@ -273,24 +273,24 @@ exit
 
 
 :ch4
-:: Catalog Master VM ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£
+:: Catalog Master VM êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„
 cls 
-echo 3. Catalog Master VM ±³Ã¼
+echo 3. Catalog Master VM êµì²´
 echo.
-echo ##Âü°í
-echo 1) ÁøÇà Àü ¹Ù²ãÄ¡±â ¿ë MCS Catalog »ı¼º ÈÄ ÁøÇà
-echo 2) ´ë»óÀÇ Ä«Å»·Î±× Name ÀÔ·Â ÈÄ ¹Ù²ãÄ¡±âÇÒ Ä«Å»·Î±× Name ÀÔ·Â
+echo ##ì°¸ê³ 
+echo 1) ì§„í–‰ ì „ ë°”ê¿”ì¹˜ê¸° ìš© MCS Catalog ìƒì„± í›„ ì§„í–‰
+echo 2) ëŒ€ìƒì˜ ì¹´íƒˆë¡œê·¸ Name ì…ë ¥ í›„ ë°”ê¿”ì¹˜ê¸°í•  ì¹´íƒˆë¡œê·¸ Name ì…ë ¥
 echo.
-echo Ä«Å»·Î±×¿¡ µî·ÏµÈ ¸¶½ºÅÍ VM UUID ¹× ÇÏÀÌÆÛ¹ÙÀÌÀú Uid ¸ñ·Ï È®ÀÎ
+echo ì¹´íƒˆë¡œê·¸ì— ë“±ë¡ëœ ë§ˆìŠ¤í„° VM UUID ë° í•˜ì´í¼ë°”ì´ì € Uid ëª©ë¡ í™•ì¸
 if %salist%==0 goto mokrokc1
 if %salist%==1 goto mokrokc2
 :iprueck
 echo.
-echo ´ë»ó Ä«Å»·Î±×³×ÀÓ ÀÔ·Â
-set /p ctl=ÀÔ·Â:
+echo ëŒ€ìƒ ì¹´íƒˆë¡œê·¸ë„¤ì„ ì…ë ¥
+set /p ctl=ì…ë ¥:
 echo.
-echo ¹Ù²ãÄ¡±â ÇÒ Ä«Å»·Î±×³×ÀÓ ÀÔ·Â
-set /p chctl=ÀÔ·Â:
+echo ë°”ê¿”ì¹˜ê¸° í•  ì¹´íƒˆë¡œê·¸ë„¤ì„ ì…ë ¥
+set /p chctl=ì…ë ¥:
 echo.
 
 ::sqlcmd -S 192.168.201.67,1433 -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId] AS ProvisioningUid,[HypervisorConnectionUid] AS Hypervisor from [leedkVDI].[chb_Config].[Catalogs]"
@@ -404,9 +404,9 @@ if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MasterVM.sql"
 if %salist%==1 sqlcmd -S %saip%,%saport% -U %sauser% -P "%sapass%" -i "%TMP%\MasterVM.sql"
 
 :: cls
-echo ¸¶½ºÅÍ VM º¯°æ ¿Ï·á!
+echo ë§ˆìŠ¤í„° VM ë³€ê²½ ì™„ë£Œ!
 echo.
-echo º¯°æµÈ Ç×¸ñ Ãâ·Â
+echo ë³€ê²½ëœ í•­ëª© ì¶œë ¥
 
 if %salist%==0 goto ch54
 if %salist%==1 goto ch55
@@ -437,50 +437,50 @@ set salist=1
 set sauser=sa
 set saport=1433
 if %dbcon%==2 goto selc2
-echo DB¼­¹ö Á¶ÀÎ ¼öµ¿ÀÔ·Â
+echo DBì„œë²„ ì¡°ì¸ ìˆ˜ë™ì…ë ¥
 echo.
-echo 1.DB¼­¹öIP ÀÔ·Â
-set /p saip=ÀÔ·Â:
+echo 1.DBì„œë²„IP ì…ë ¥
+set /p saip=ì…ë ¥:
 echo.
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p saport=ÀÔ·Â:
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p saport=ì…ë ¥:
 echo.
-echo 3.CVAD DB¸í ÀÔ·Â
-set /p userDB=ÀÔ·Â:
+echo 3.CVAD DBëª… ì…ë ¥
+set /p userDB=ì…ë ¥:
 echo.
-echo 4.DB user ÀÔ·Â 
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã sa°èÁ¤À¸·Î ÀÚµ¿ ÀÔ·Â
-set /p sauser=ÀÔ·Â:
+echo 4.DB user ì…ë ¥ 
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ saê³„ì •ìœ¼ë¡œ ìë™ ì…ë ¥
+set /p sauser=ì…ë ¥:
 echo.
-echo 5.DB %sauser% °èÁ¤ ÆĞ½º¿öµå ÀÔ·Â
-call :getPassword usersapass "ÀÔ·Â: "
+echo 5.DB %sauser% ê³„ì • íŒ¨ìŠ¤ì›Œë“œ ì…ë ¥
+call :getPassword usersapass "ì…ë ¥: "
 echo.
 
 :selc2
 cls
 if %dbcon%==2 set singleDB=Disable
-echo DB¼­¹ö Á¶ÀÎ ¼öµ¿ÀÔ·Â
+echo DBì„œë²„ ì¡°ì¸ ìˆ˜ë™ì…ë ¥
 echo.
-echo 1.DB¼­¹öIP ÀÔ·Â
-set /p saip=ÀÔ·Â:
+echo 1.DBì„œë²„IP ì…ë ¥
+set /p saip=ì…ë ¥:
 echo.
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p saport=ÀÔ·Â:
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p saport=ì…ë ¥:
 echo.
-echo 3.CVAD DB Site¸í ÀÔ·Â
-set /p userSiteDB=ÀÔ·Â:
+echo 3.CVAD DB Siteëª… ì…ë ¥
+set /p userSiteDB=ì…ë ¥:
 echo.
-echo 4.CVAD DB Monitor¸í ÀÔ·Â
-set /p userMoDB=ÀÔ·Â:
+echo 4.CVAD DB Monitorëª… ì…ë ¥
+set /p userMoDB=ì…ë ¥:
 echo.
-echo 5.DB user ÀÔ·Â 
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã sa°èÁ¤À¸·Î ÀÚµ¿ ÀÔ·Â
-set /p sauser=ÀÔ·Â:
+echo 5.DB user ì…ë ¥ 
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ saê³„ì •ìœ¼ë¡œ ìë™ ì…ë ¥
+set /p sauser=ì…ë ¥:
 echo.
-echo 6.DB %sauser% °èÁ¤ ÆĞ½º¿öµå ÀÔ·Â
-call :getPassword usersapass "ÀÔ·Â: "
+echo 6.DB %sauser% ê³„ì • íŒ¨ìŠ¤ì›Œë“œ ì…ë ¥
+call :getPassword usersapass "ì…ë ¥: "
 echo.
 
 
