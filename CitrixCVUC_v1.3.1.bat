@@ -1,10 +1,10 @@
 @echo off 
 del "%TMP%\*.sql" "%TMP%\*.log" >nul
-echo MCS VM Changer v1.3.1 
-echo ¹öÀüÀÏÀÚ 2023-02-23
-title MCS VM Changer v1.3.1
+echo Citrix CVAD VDI UUID Changer v1.3.1 
+echo ë²„ì „ì¼ì 2023-02-23
+title Citrix CVAD VDI UUID Changer v1.3.1
 set salist=0
-:: Citrix MCS VM UUIDº¯°æ Åø
+:: Citrix MCS VM UUIDë³€ê²½ íˆ´
 
 IF EXIST config.conf (
 goto ODBC
@@ -15,34 +15,34 @@ goto ODBC
 
 :input
 cls
-::¹é¾÷ ¿É¼ÇÀº ±âº» ¿É¼ÇÀÌ'1' (1ÀÌ È°¼ºÈ­ 0ÀÌ ºñÈ°¼ºÈ­)
+::ë°±ì—… ì˜µì…˜ì€ ê¸°ë³¸ ì˜µì…˜ì´'1' (1ì´ í™œì„±í™” 0ì´ ë¹„í™œì„±í™”)
 set bkoption=1
 set dbport=1433
 if %computername%==%userdomain% goto main
-echo MVC ÃÊ±â±¸¼º Config ±¸¼º 
-echo ±¸¼º ¿Ï·á ½Ã MVC.bat °æ·Î¿¡ Config.conf ÆÄÀÏ »ı¼º
+echo MVC ì´ˆê¸°êµ¬ì„± Config êµ¬ì„± 
+echo êµ¬ì„± ì™„ë£Œ ì‹œ MVC.bat ê²½ë¡œì— Config.conf íŒŒì¼ ìƒì„±
 echo.
-:: config ¼³Á¤ ------
+:: config ì„¤ì • ------
 
-:: DB¼­¹ö IP or µµ¸ŞÀÎ ¼³Á¤
-echo 1.DB¼­¹ö IP ÀÔ·Â
-set /p userDBip=ÀÔ·Â:
+:: DBì„œë²„ IP or ë„ë©”ì¸ ì„¤ì •
+echo 1.DBì„œë²„ IP ì…ë ¥
+set /p userDBip=ì…ë ¥:
 echo.
-:: DB¼­¹ö Æ÷Æ® ¼³Á¤
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p dbport=ÀÔ·Â:
+:: DBì„œë²„ í¬íŠ¸ ì„¤ì •
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p dbport=ì…ë ¥:
 echo.
-:: DB ½Ì±Û ¹× ºĞÇÒ ±¸¼º ¼±ÅÃ
+:: DB ì‹±ê¸€ ë° ë¶„í•  êµ¬ì„± ì„ íƒ
 :main
 set seldb=vm
 echo.
 :: echo %salist%
-echo ## DBÁ¢¼ÓÁ¤º¸ ¼³Á¤ ¸Ş´º
-echo Citrix Controller¿¡ ¼³Á¤ µÈ DB»óÅÂ°¡ ½Ì±Û »óÅÂÀÎÁö Site/Monitoring/LoggingÀ¸·Î ºĞÇÒ ±¸¼º µÇ¾îÀÖ´ÂÁö ¼±ÅÃ
+echo ## DBì ‘ì†ì •ë³´ ì„¤ì • ë©”ë‰´
+echo Citrix Controllerì— ì„¤ì • ëœ DBìƒíƒœê°€ ì‹±ê¸€ ìƒíƒœì¸ì§€ Site/Monitoring/Loggingìœ¼ë¡œ ë¶„í•  êµ¬ì„± ë˜ì–´ìˆëŠ”ì§€ ì„ íƒ
 echo.
-echo 1. ½Ì±Û ±¸¼º    2. ºĞÇÒ ±¸¼º   x. ³ª°¡±â  c.ÀÌÀü ¸Ş´º
-set /p seldb=ÀÔ·Â:
+echo 1. ì‹±ê¸€ êµ¬ì„±    2. ë¶„í•  êµ¬ì„±   x. ë‚˜ê°€ê¸°  c.ì´ì „ ë©”ë‰´
+set /p seldb=ì…ë ¥:
 
 if %seldb%==vm goto derr
 if %seldb%==1 set dbcon=1 & goto input1
@@ -54,30 +54,30 @@ if %seldb%==C if exist "config.conf" (goto main2) ELSE (goto input)
 
 
 :derr
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
-echo Àß¸øµÈ °ªÀ¸·Î Ã³À½ È­¸éÀ¸·Î ´Ù½Ã µ¹¾Æ°©´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
+echo ì˜ëª»ëœ ê°’ìœ¼ë¡œ ì²˜ìŒ í™”ë©´ìœ¼ë¡œ ë‹¤ì‹œ ëŒì•„ê°‘ë‹ˆë‹¤.
 pause
 goto input
 
-:: DB ±¸¼º (½Ì±Û / ºĞÇÒ)
+:: DB êµ¬ì„± (ì‹±ê¸€ / ë¶„í• )
 :input1
-:: µµ¸ŞÀÎ Á¶ÀÎ ¿©ºÎ 
-:: ·ÎÄÃ È£½ºÆ®¿¡¼­ µµ¸ŞÀÎ Á¶ÀÎ»óÅÂ¿¡ µû¶ó DBÁ¶ÀÎ ¼öµ¿ÀÔ·ÂÀ¸·Î ÀÚµ¿ ÀüÈ¯
+:: ë„ë©”ì¸ ì¡°ì¸ ì—¬ë¶€ 
+:: ë¡œì»¬ í˜¸ìŠ¤íŠ¸ì—ì„œ ë„ë©”ì¸ ì¡°ì¸ìƒíƒœì— ë”°ë¼ DBì¡°ì¸ ìˆ˜ë™ì…ë ¥ìœ¼ë¡œ ìë™ ì „í™˜
 if %computername%==%userdomain% goto selc1
 echo.
-echo 3-1. ½Ì±Û DB ¼³Á¤
-set /p userDB=ÀÔ·Â:
+echo 3-1. ì‹±ê¸€ DB ì„¤ì •
+set /p userDB=ì…ë ¥:
 set userSiteDB=null
 set userMoDB=null
 goto input3
 
 :input2
-:: µµ¸ŞÀÎ Á¶ÀÎ ¿©ºÎ 
-:: ·ÎÄÃ È£½ºÆ®¿¡¼­ µµ¸ŞÀÎ Á¶ÀÎ»óÅÂ¿¡ µû¶ó DBÁ¶ÀÎ ¼öµ¿ÀÔ·ÂÀ¸·Î ÀÚµ¿ ÀüÈ¯
+:: ë„ë©”ì¸ ì¡°ì¸ ì—¬ë¶€ 
+:: ë¡œì»¬ í˜¸ìŠ¤íŠ¸ì—ì„œ ë„ë©”ì¸ ì¡°ì¸ìƒíƒœì— ë”°ë¼ DBì¡°ì¸ ìˆ˜ë™ì…ë ¥ìœ¼ë¡œ ìë™ ì „í™˜
 if %computername%==%userdomain% goto selc1
-echo 3-2. ºĞÇÒ DB ¼³Á¤ 
-set /p userSiteDB=ÀÔ·Â:
-set /p userMoDB=ÀÔ·Â:
+echo 3-2. ë¶„í•  DB ì„¤ì • 
+set /p userSiteDB=ì…ë ¥:
+set /p userMoDB=ì…ë ¥:
 
 :input3
 if %dbcon%==1 set singleDB=Enable
@@ -108,12 +108,12 @@ pause
 
 :install
 cls
-echo ÇöÀç È£½ºÆ®¿¡ SQL Server ODBC µå¶óÀÌ¹ö ¹× SQLCMDÀ¯Æ¿ÀÌ ¼³Ä¡ µÇ¾îÀÖÁö ¾Ê½À´Ï´Ù.
+echo í˜„ì¬ í˜¸ìŠ¤íŠ¸ì— SQL Server ODBC ë“œë¼ì´ë²„ ë° SQLCMDìœ í‹¸ì´ ì„¤ì¹˜ ë˜ì–´ìˆì§€ ì•ŠìŠµë‹ˆë‹¤.
 echo.
-echo ´ÙÀ½ URL¿¡¼­ ¼³Ä¡ ÈÄ ÁøÇà¹Ù¶ø´Ï´Ù.
-echo ODBC µå¶óÀÌ¹ö : https://docs.microsoft.com/ko-kr/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15
+echo ë‹¤ìŒ URLì—ì„œ ì„¤ì¹˜ í›„ ì§„í–‰ë°”ëë‹ˆë‹¤.
+echo ODBC ë“œë¼ì´ë²„ : https://docs.microsoft.com/ko-kr/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15
 echo.
-echo sqlcmd À¯Æ¿ : https://docs.microsoft.com/ko-kr/sql/tools/sqlcmd-utility?view=sql-server-ver15
+echo sqlcmd ìœ í‹¸ : https://docs.microsoft.com/ko-kr/sql/tools/sqlcmd-utility?view=sql-server-ver15
 
 pause
 
@@ -138,28 +138,28 @@ set saip=%userDBip%
 if %singleDB%==Enable set dbcon=1
 if %singleDB%==Disable set dbcon=2
 set sel=vm
-if %dbcon%==1 set bsel=½Ì±Û
-if %dbcon%==2 set bsel=ºĞÇÒ
-if %salist%==0 set dbuserauto=ADµµ¸ŞÀÎÀÎÁõ
-if %salist%==1 set dbuserauto=SQL Server ÀÎÁõ
+if %dbcon%==1 set bsel=ì‹±ê¸€
+if %dbcon%==2 set bsel=ë¶„í• 
+if %salist%==0 set dbuserauto=ADë„ë©”ì¸ì¸ì¦
+if %salist%==1 set dbuserauto=SQL Server ì¸ì¦
 cls
 :: echo %salist%
-echo VM UUID,Pool ÄÁ³Ø¼Ç º¯°æ,Ä«Å»·Î±× ¸¶½ºÅÍ VM º¯°æ ¹× DB ±¸¼º º¯°æ ¸Ş´º
-echo ¿É¼Ç ¼±ÅÃ
+echo VM UUID,Pool ì»¨ë„¥ì…˜ ë³€ê²½,ì¹´íƒˆë¡œê·¸ ë§ˆìŠ¤í„° VM ë³€ê²½ ë° DB êµ¬ì„± ë³€ê²½ ë©”ë‰´
+echo ì˜µì…˜ ì„ íƒ
 echo.
-echo ÇöÀç Citrix DB ¹æ½ÄÀº( %bsel% )¹æ½ÄÀÔ´Ï´Ù. 
-echo ÇöÀç MVC DB ÀÔ·Â¹æ½ÄÀº ( %dbuserauto% ) ¹æ½ÄÀÔ´Ï´Ù.
+echo í˜„ì¬ Citrix DB ë°©ì‹ì€( %bsel% )ë°©ì‹ì…ë‹ˆë‹¤. 
+echo í˜„ì¬ MVC DB ì…ë ¥ë°©ì‹ì€ ( %dbuserauto% ) ë°©ì‹ì…ë‹ˆë‹¤.
 echo.
 echo.
-echo 1. VM_UUID º¯°æ    
-echo 2. VM_POOLÄÁ³Ø¼Ç º¯°æ  
-echo 3. Catalog Master VM ±³Ã¼  
-echo 4. DBÁ¢¼ÓÁ¤º¸ º¯°æ
-echo 5. MVCº¹¿ø
-echo 6. ´Ù·®ÀÇ µ¥ÀÌÅÍ Ã³¸®ÇÏ±â (CSVÆÄÀÏ Ã³¸®) 
-echo x. ³ª°¡±â
+echo 1. VM_UUID ë³€ê²½    
+echo 2. VM_POOLì»¨ë„¥ì…˜ ë³€ê²½  
+echo 3. Catalog Master VM êµì²´  
+echo 4. DBì ‘ì†ì •ë³´ ë³€ê²½
+echo 5. MVCë³µì›
+echo 6. ë‹¤ëŸ‰ì˜ ë°ì´í„° ì²˜ë¦¬í•˜ê¸° (CSVíŒŒì¼ ì²˜ë¦¬) 
+echo x. ë‚˜ê°€ê¸°
 echo.
-set /p sel=ÀÔ·Â:
+set /p sel=ì…ë ¥:
 
 if %sel%==vm goto err
 if %sel%==1 goto ch1
@@ -174,28 +174,28 @@ if %sel%==v goto ver
 if %sel%==V goto ver
 
 :err
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
 pause
 goto main2
 
 :ch1
 set useruuid=c
-:: VM_UUID ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£ 
+:: VM_UUID êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„ 
 cls 
-echo 1. VM_UUID º¯°æ
-echo ÀÌÀü¸Ş´º·Î µ¹¾Æ°¡±â 'c' ÀÔ·Â
+echo 1. VM_UUID ë³€ê²½
+echo ì´ì „ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'c' ì…ë ¥
 echo.
-echo ÀÔ·Â ¿¹½Ã) 07324359-868a-6459-2b7c-21ca8dc1e20a
+echo ì…ë ¥ ì˜ˆì‹œ) 07324359-868a-6459-2b7c-21ca8dc1e20a
 echo.
-echo ÇöÀç VMÀÇ UUIDÀÔ·Â
-set /p useuuid=ÀÔ·Â:
+echo í˜„ì¬ VMì˜ UUIDì…ë ¥
+set /p useuuid=ì…ë ¥:
 if %useuuid%==c goto main2
 if %useuuid%==C goto main2
 
 echo.
 echo.
-echo ±³Ã¼ VMÀÇ UUIDÀÔ·Â
-set /p chuuid=ÀÔ·Â:
+echo êµì²´ VMì˜ UUIDì…ë ¥
+set /p chuuid=ì…ë ¥:
 
 if %salist%==0 goto mcsvmvar1
 if %salist%==1 goto mcsvmvar2
@@ -215,14 +215,14 @@ echo SET QUOTED_IDENTIFIER ON > "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
 echo GO >> "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
-:: Monitoring DB º¯°æ ±¸°£
+:: Monitoring DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[MonitorData].[Machine] >> "%TMP%\MCS.sql"
 if %dbcon%==2 echo UPDATE [%userMoDB%].[MonitorData].[Machine] >> "%TMP%\MCS.sql"
 echo SET HostedMachineId = '%chuuid%' >> "%TMP%\MCS.sql"
 echo WHERE HostedMachineId = '%useuuid%' >> "%TMP%\MCS.sql"
 echo. >> "%TMP%\MCS.sql"
 
-:: Site DB º¯°æ ±¸°£
+:: Site DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[Chb_Config].[Workers] >> "%TMP%\MCS.sql"
 if %dbcon%==2 echo UPDATE [%userSiteDB%].[Chb_Config].[Workers] >> "%TMP%\MCS.sql"
 echo SET HostedMachineId = '%chuuid%' >> "%TMP%\MCS.sql"
@@ -237,33 +237,33 @@ if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MCS.sql"
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\MCS.sql"
 
 echo.
-echo MCS VM(%usename%)ÀÌ ±âÁ¸ %useuuid%¿¡¼­ %chuuid%·Î º¯°æµÇ¾ú½À´Ï´Ù.
+echo MCS VM(%usename%)ì´ ê¸°ì¡´ %useuuid%ì—ì„œ %chuuid%ë¡œ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.
 
 
 :VMBK
 if %bkoption%==0 goto ch11
 if exist "Backup\VM\" (echo.) ELSE (mkdir "Backup\VM\")
 if exist "Backup\VM\MCSbak.sql" (echo.) ELSE (goto VMBKrenameskip)
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\VM\MCSbak.sql"') do set rename=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\VM\MCSbak.sql"') do set rename=%%i >nul
 move "Backup\VM\MCSbak.sql" "Backup\VM\%rename::=%- MCSbak.sql" >nul
 :VMBKrenameskip
 
-:: VM backup ÀúÀå
-echo -- ¹é¾÷ÀÏÀÚ: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\VM\MCSbak.sql"
-echo -- ¹é¾÷´ë»óVM: VMUID:%useuuid% >> "Backup\VM\MCSbak.sql"
-echo -- º¯°æ³»¿ë:  MCS VM(%usename%)ÀÌ ±âÁ¸ %useuuid%¿¡¼­ %chuuid%·Î º¯°æ >> "Backup\VM\MCSbak.sql"
+:: VM backup ì €ì¥
+echo -- ë°±ì—…ì¼ì: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\VM\MCSbak.sql"
+echo -- ë°±ì—…ëŒ€ìƒVM: VMUID:%useuuid% >> "Backup\VM\MCSbak.sql"
+echo -- ë³€ê²½ë‚´ìš©:  MCS VM(%usename%)ì´ ê¸°ì¡´ %useuuid%ì—ì„œ %chuuid%ë¡œ ë³€ê²½ >> "Backup\VM\MCSbak.sql"
 echo SET QUOTED_IDENTIFIER ON >> "Backup\VM\MCSbak.sql"
 echo. >> "Backup\VM\MCSbak.sql"
 echo GO >> "Backup\VM\MCSbak.sql"
 echo. >> "Backup\VM\MCSbak.sql"
-:: Monitoring DB ±¸°£
+:: Monitoring DB êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[MonitorData].[Machine] >> "Backup\VM\MCSbak.sql"
 if %dbcon%==2 echo UPDATE [%userMoDB%].[MonitorData].[Machine] >> "Backup\VM\MCSbak.sql"
 echo SET HostedMachineId = '%useuuid%' >> "Backup\VM\MCSbak.sql"
 echo WHERE HostedMachineId = '%chuuid%' >> "Backup\VM\MCSbak.sql"
 echo. >> "Backup\VM\MCSbak.sql"
 
-:: Site DB ±¸°£
+:: Site DB êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[Chb_Config].[Workers] >> "Backup\VM\MCSbak.sql"
 if %dbcon%==2 echo UPDATE [%userSiteDB%].[Chb_Config].[Workers] >> "Backup\VM\MCSbak.sql"
 echo SET HostedMachineId = '%useuuid%' >> "Backup\VM\MCSbak.sql"
@@ -281,20 +281,20 @@ del "%TMP%\MCS.sql"
 goto main2
 
 :ch2
-:: Pool ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£
+:: Pool êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„
 cls 
 set chuuid=c
-echo 2. VM_POOLÄÁ³Ø¼Ç º¯°æ
-echo ÀÌÀü¸Ş´º·Î µ¹¾Æ°¡±â 'c' ÀÔ·Â
+echo 2. VM_POOLì»¨ë„¥ì…˜ ë³€ê²½
+echo ì´ì „ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'c' ì…ë ¥
 echo.
-echo ÀÔ·Â ¿¹½Ã) 07324359-868a-6459-2b7c-21ca8dc1e20a
+echo ì…ë ¥ ì˜ˆì‹œ) 07324359-868a-6459-2b7c-21ca8dc1e20a
 echo.
-echo Ç®±³Ã¼ ´ë»ó VMÀÇ UUIDÀÔ·Â
-set /p chuuid=ÀÔ·Â:
+echo í’€êµì²´ ëŒ€ìƒ VMì˜ UUIDì…ë ¥
+set /p chuuid=ì…ë ¥:
 if %chuuid%==c goto main2
 if %chuuid%==C goto main2
 echo.
-echo ¼±ÅÃµÈ VM¿¡ ÇöÀç µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú UidÈ®ÀÎ
+echo ì„ íƒëœ VMì— í˜„ì¬ ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € Uidí™•ì¸
 echo.
 if %salist%==0 goto poolvar1
 if %salist%==1 goto poolvar2
@@ -318,9 +318,9 @@ if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %saip%^,%dbport% -U %sauser% 
 if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userMoDB%].[MonitorData].[Machine] where HostedMachineId='%chuuid%'"') do set chname=%%i
 
 :poolvar3
-echo ÇöÀç VM(%chname%)¿¡ µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú Uid¹øÈ£ ´Â %vmp: =%¹ø ÀÔ´Ï´Ù.
+echo í˜„ì¬ VM(%chname%)ì— ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € Uidë²ˆí˜¸ ëŠ” %vmp: =%ë²ˆ ì…ë‹ˆë‹¤.
 echo.
-echo DDCÈ£½ºÆÃ¿¡ µî·ÏµÈ ÇÏÀÌÆÛ¹ÙÀÌÀú ¸ñ·Ï
+echo DDCí˜¸ìŠ¤íŒ…ì— ë“±ë¡ëœ í•˜ì´í¼ë°”ì´ì € ëª©ë¡
 
 if %salist%==0 goto ch21 
 if %salist%==1 goto ch22 
@@ -336,9 +336,9 @@ if %dbcon%==2 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -Q "select sub
 
 
 :ch3
-echo È­¸é¿¡ Ç¥½ÃµÈ ±³Ã¼ ÁøÇà ÇÒ ÇÏÀÌÆÛ¹ÙÀÌÀú Uid¹øÈ£ ÁöÁ¤ÇÏ±â
+echo í™”ë©´ì— í‘œì‹œëœ êµì²´ ì§„í–‰ í•  í•˜ì´í¼ë°”ì´ì € Uidë²ˆí˜¸ ì§€ì •í•˜ê¸°
 echo.
-set /p poolin=ÀÔ·Â:
+set /p poolin=ì…ë ¥:
 
 if %salist%==0 goto ch31
 if %salist%==1 goto ch32
@@ -359,13 +359,13 @@ echo. >> "%TMP%\Pool.sql"
 echo GO >> "%TMP%\Pool.sql"
 echo. >> "%TMP%\Pool.sql"
 echo. >> "%TMP%\Pool.sql"
-:: Monitoring DB º¯°æ ±¸°£
+:: Monitoring DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[MonitorData].[Machine] >> "%TMP%\Pool.sql"
 if %dbcon%==2 echo UPDATE [%userMoDB%].[MonitorData].[Machine] >> "%TMP%\Pool.sql"
 echo SET HypervisorId = '%poolin1%' >> "%TMP%\Pool.sql"
 echo WHERE HostedMachineId = '%chuuid%' >> "%TMP%\Pool.sql"
 echo. >> "%TMP%\Pool.sql"
-:: Site DB º¯°æ ±¸°£
+:: Site DB ë³€ê²½ êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[chb_Config].[Workers] >> "%TMP%\Pool.sql"
 if %dbcon%==2 echo UPDATE [%userSiteDB%].[chb_Config].[Workers] >> "%TMP%\Pool.sql"
 echo SET HypervisorConnectionUid = '%poolin%' >> "%TMP%\Pool.sql"
@@ -380,31 +380,31 @@ echo.
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\Pool.sql"
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\Pool.sql"
 
-echo VM(%chname%). %vmp: =%¹ø¿¡¼­ %poolin%¹ø Ç® º¯°æ ¿Ï·á!
+echo VM(%chname%). %vmp: =%ë²ˆì—ì„œ %poolin%ë²ˆ í’€ ë³€ê²½ ì™„ë£Œ!
 
 :PoolBK
 if %bkoption%==0 goto ch34
 if exist "Backup\Pool\" (echo.) ELSE (mkdir "Backup\Pool\")
 if exist "Backup\Pool\poolbak.sql" (echo.) ELSE (goto PBKrenameskip)
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Pool\poolbak.sql"') do set rename=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Pool\poolbak.sql"') do set rename=%%i >nul
 move "Backup\Pool\poolbak.sql" "Backup\Pool\%rename::=% poolbak.sql" >nul
 :PBKrenameskip
-:: Pool backup ÀúÀå
-echo -- ¹é¾÷ÀÏÀÚ: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\Pool\poolbak.sql"
-echo -- ¹é¾÷´ë»óVM: VMUID:%chuuid% VMName:%chname% >> "Backup\Pool\poolbak.sql"
-echo -- º¯°æ³»¿ë: Hpervisor Pool %vmp: =%¹ø¿¡¼­ %poolin%¹ø Ç® º¯°æ >> "Backup\Pool\poolbak.sql"
+:: Pool backup ì €ì¥
+echo -- ë°±ì—…ì¼ì: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\Pool\poolbak.sql"
+echo -- ë°±ì—…ëŒ€ìƒVM: VMUID:%chuuid% VMName:%chname% >> "Backup\Pool\poolbak.sql"
+echo -- ë³€ê²½ë‚´ìš©: Hpervisor Pool %vmp: =%ë²ˆì—ì„œ %poolin%ë²ˆ í’€ ë³€ê²½ >> "Backup\Pool\poolbak.sql"
 echo SET QUOTED_IDENTIFIER ON >> "Backup\Pool\poolbak.sql"
 echo. >> "Backup\Pool\poolbak.sql"
 echo GO >> "Backup\Pool\poolbak.sql"
 echo. >> "Backup\Pool\poolbak.sql"
 echo. >> "Backup\Pool\poolbak.sql"
-:: Monitoring DB ±¸°£
+:: Monitoring DB êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[MonitorData].[Machine] >> "Backup\Pool\poolbak.sql"
 if %dbcon%==2 echo UPDATE [%userMoDB%].[MonitorData].[Machine] >> "Backup\Pool\poolbak.sql"
 echo SET HypervisorId = '%vmp1%' >> "Backup\Pool\poolbak.sql"
 echo WHERE HostedMachineId = '%chuuid%' >> "Backup\Pool\poolbak.sql"
 echo. >> "Backup\Pool\poolbak.sql"
-:: Site DB ±¸°£
+:: Site DB êµ¬ê°„
 if %dbcon%==1 echo UPDATE [%userDB%].[chb_Config].[Workers] >> "Backup\Pool\poolbak.sql"
 if %dbcon%==2 echo UPDATE [%userSiteDB%].[chb_Config].[Workers] >> "Backup\Pool\poolbak.sql"
 echo SET HypervisorConnectionUid = '%vmp: =%' >> "Backup\Pool\poolbak.sql"
@@ -426,28 +426,28 @@ goto main2
 
 
 :ch4
-:: Catalog Master VM ±³Ã¼ ½ºÅ©¸³Æ® ±¸°£
+:: Catalog Master VM êµì²´ ìŠ¤í¬ë¦½íŠ¸ êµ¬ê°„
 cls 
 set ctl=c
-echo 3. Catalog Master VM ±³Ã¼
-echo ÀÌÀü¸Ş´º·Î µ¹¾Æ°¡±â 'c' ÀÔ·Â
+echo 3. Catalog Master VM êµì²´
+echo ì´ì „ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'c' ì…ë ¥
 echo.
-echo ##Âü°í
-echo 1) ÁøÇà Àü ¹Ù²ãÄ¡±â ¿ë MCS Catalog »ı¼º ÈÄ ÁøÇà
-echo 2) ´ë»óÀÇ Ä«Å»·Î±× Name ÀÔ·Â ÈÄ ¹Ù²ãÄ¡±âÇÒ Ä«Å»·Î±× Name ÀÔ·Â
+echo ##ì°¸ê³ 
+echo 1) ì§„í–‰ ì „ ë°”ê¿”ì¹˜ê¸° ìš© MCS Catalog ìƒì„± í›„ ì§„í–‰
+echo 2) ëŒ€ìƒì˜ ì¹´íƒˆë¡œê·¸ Name ì…ë ¥ í›„ ë°”ê¿”ì¹˜ê¸°í•  ì¹´íƒˆë¡œê·¸ Name ì…ë ¥
 echo.
-echo Ä«Å»·Î±×¿¡ µî·ÏµÈ ¸¶½ºÅÍ VM UUID ¹× ÇÏÀÌÆÛ¹ÙÀÌÀú Uid ¸ñ·Ï È®ÀÎ
+echo ì¹´íƒˆë¡œê·¸ì— ë“±ë¡ëœ ë§ˆìŠ¤í„° VM UUID ë° í•˜ì´í¼ë°”ì´ì € Uid ëª©ë¡ í™•ì¸
 if %salist%==0 goto mokrokc1
 if %salist%==1 goto mokrokc2
 :iprueck
 echo.
-echo ´ë»ó Ä«Å»·Î±×³×ÀÓ ÀÔ·Â
-set /p ctl=ÀÔ·Â:
+echo ëŒ€ìƒ ì¹´íƒˆë¡œê·¸ë„¤ì„ ì…ë ¥
+set /p ctl=ì…ë ¥:
 if %ctl%==c goto main2
 if %ctl%==C goto main2
 echo.
-echo ¹Ù²ãÄ¡±â ÇÒ Ä«Å»·Î±×³×ÀÓ ÀÔ·Â
-set /p chctl=ÀÔ·Â:
+echo ë°”ê¿”ì¹˜ê¸° í•  ì¹´íƒˆë¡œê·¸ë„¤ì„ ì…ë ¥
+set /p chctl=ì…ë ¥:
 echo.
 
 ::sqlcmd -S 192.168.201.67,1433 -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId] AS ProvisioningUid,[HypervisorConnectionUid] AS Hypervisor from [leedkVDI].[chb_Config].[Catalogs]"
@@ -560,9 +560,9 @@ if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MasterVM.sql"
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\MasterVM.sql"
 
 :: cls
-echo ¸¶½ºÅÍ VM º¯°æ ¿Ï·á!
+echo ë§ˆìŠ¤í„° VM ë³€ê²½ ì™„ë£Œ!
 echo.
-echo º¯°æµÈ Ç×¸ñ Ãâ·Â
+echo ë³€ê²½ëœ í•­ëª© ì¶œë ¥
 
 if %salist%==0 goto ch54
 if %salist%==1 goto ch55
@@ -581,14 +581,14 @@ if %dbcon%==2 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -Q "select sub
 if %bkoption%==0 goto ch56
 if exist "Backup\Master\" (echo.) ELSE (mkdir "Backup\Master\")
 if exist "Backup\Master\imagebak.sql" (echo.) ELSE (goto MBKrenameskip)
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Master\imagebak.sql"') do set rename=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Master\imagebak.sql"') do set rename=%%i >nul
 move "Backup\Master\imagebak.sql" "Backup\Master\%rename::=%- imagebak.sql" >nul
 :MBKrenameskip
-:: Pool backup ÀúÀå
-echo -- ¹é¾÷ÀÏÀÚ: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\Master\imagebak.sql"
-echo -- ´ë»ó Ä«Å»·Î±×: %ctl% >> "Backup\Master\imagebak.sql"
-echo -- ´ë»ó Hypervisor : %HypUID: =% >> "Backup\Master\imagebak.sql"
-echo -- º¯°æ³»¿ë: Ä«Å»·Î±× ÀÌ¹ÌÁö(%ctl% -^> %chctl%) HypervisorUid(%HypUID: =% -^> %chHypUID: =%) Ä«Å»·Î±× Uid(%ProvSID% -^> %chProvSID%)>> "Backup\Master\imagebak.sql"
+:: Pool backup ì €ì¥
+echo -- ë°±ì—…ì¼ì: %date:~2,2%%date:~5,2%%date:~8,2%-%time:~0,8% > "Backup\Master\imagebak.sql"
+echo -- ëŒ€ìƒ ì¹´íƒˆë¡œê·¸: %ctl% >> "Backup\Master\imagebak.sql"
+echo -- ëŒ€ìƒ Hypervisor : %HypUID: =% >> "Backup\Master\imagebak.sql"
+echo -- ë³€ê²½ë‚´ìš©: ì¹´íƒˆë¡œê·¸ ì´ë¯¸ì§€(%ctl% -^> %chctl%) HypervisorUid(%HypUID: =% -^> %chHypUID: =%) ì¹´íƒˆë¡œê·¸ Uid(%ProvSID% -^> %chProvSID%)>> "Backup\Master\imagebak.sql"
 echo SET QUOTED_IDENTIFIER ON >> "Backup\Master\imagebak.sql"
 echo. >> "Backup\Master\imagebak.sql"
 echo GO >> "Backup\Master\imagebak.sql"
@@ -649,57 +649,57 @@ set salist=1
 set sauser=sa
 set dbport=1433
 if %dbcon%==2 goto selc2
-echo DBÁ¢¼ÓÁ¤º¸ ¼³Á¤
-echo ÀÌÀü¸Ş´º·Î µ¹¾Æ°¡±â 'c' ÀÔ·Â
+echo DBì ‘ì†ì •ë³´ ì„¤ì •
+echo ì´ì „ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'c' ì…ë ¥
 echo.
-echo 1.DB¼­¹öIP ÀÔ·Â
-set /p saip=ÀÔ·Â:
+echo 1.DBì„œë²„IP ì…ë ¥
+set /p saip=ì…ë ¥:
 if %saip%==c cls & goto main
 if %saip%==C cls & goto main
 echo.
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p dbport=ÀÔ·Â:
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p dbport=ì…ë ¥:
 echo.
-echo 3.CVAD DB¸í ÀÔ·Â
-set /p userDB=ÀÔ·Â:
+echo 3.CVAD DBëª… ì…ë ¥
+set /p userDB=ì…ë ¥:
 echo.
-echo 4.DB user ÀÔ·Â 
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã sa°èÁ¤À¸·Î ÀÚµ¿ ÀÔ·Â
-set /p sauser=ÀÔ·Â:
+echo 4.DB user ì…ë ¥ 
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ saê³„ì •ìœ¼ë¡œ ìë™ ì…ë ¥
+set /p sauser=ì…ë ¥:
 echo.
-echo 5.DB %sauser% °èÁ¤ ÆĞ½º¿öµå ÀÔ·Â
-call :getPassword usersapass "ÀÔ·Â: "
+echo 5.DB %sauser% ê³„ì • íŒ¨ìŠ¤ì›Œë“œ ì…ë ¥
+call :getPassword usersapass "ì…ë ¥: "
 echo.
 
 :selc2
 cls
 set saip=c
 if %dbcon%==2 set singleDB=Disable
-echo DBÁ¢¼ÓÁ¤º¸ ¼³Á¤
-echo ÀÌÀü¸Ş´º·Î µ¹¾Æ°¡±â 'c' ÀÔ·Â
+echo DBì ‘ì†ì •ë³´ ì„¤ì •
+echo ì´ì „ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'c' ì…ë ¥
 echo.
-echo 1.DB¼­¹öIP ÀÔ·Â
-set /p saip=ÀÔ·Â:
+echo 1.DBì„œë²„IP ì…ë ¥
+set /p saip=ì…ë ¥:
 if %saip%==c cls & goto main
 if %saip%==C cls & goto main
 echo.
-echo 2.DB¼­¹öPort ÀÔ·Â
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã ±âº» 1433Æ÷Æ®·Î ÀÚµ¿ ÀÔ·Â
-set /p dbport=ÀÔ·Â:
+echo 2.DBì„œë²„Port ì…ë ¥
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ ê¸°ë³¸ 1433í¬íŠ¸ë¡œ ìë™ ì…ë ¥
+set /p dbport=ì…ë ¥:
 echo.
-echo 3.CVAD DB Site¸í ÀÔ·Â
-set /p userSiteDB=ÀÔ·Â:
+echo 3.CVAD DB Siteëª… ì…ë ¥
+set /p userSiteDB=ì…ë ¥:
 echo.
-echo 4.CVAD DB Monitor¸í ÀÔ·Â
-set /p userMoDB=ÀÔ·Â:
+echo 4.CVAD DB Monitorëª… ì…ë ¥
+set /p userMoDB=ì…ë ¥:
 echo.
-echo 5.DB user ÀÔ·Â 
-echo ÀÔ·Â¾ÈÇÏ°í ³Ñ¾î°¥ ½Ã sa°èÁ¤À¸·Î ÀÚµ¿ ÀÔ·Â
-set /p sauser=ÀÔ·Â:
+echo 5.DB user ì…ë ¥ 
+echo ì…ë ¥ì•ˆí•˜ê³  ë„˜ì–´ê°ˆ ì‹œ saê³„ì •ìœ¼ë¡œ ìë™ ì…ë ¥
+set /p sauser=ì…ë ¥:
 echo.
-echo 6.DB %sauser% °èÁ¤ ÆĞ½º¿öµå ÀÔ·Â
-call :getPassword usersapass "ÀÔ·Â: "
+echo 6.DB %sauser% ê³„ì • íŒ¨ìŠ¤ì›Œë“œ ì…ë ¥
+call :getPassword usersapass "ì…ë ¥: "
 echo.
 
 
@@ -734,7 +734,7 @@ set "%~1=%decpass%"
 
 set userDBip=%saip%
 
-::¾ÏÈ£È­
+::ì•”í˜¸í™”
 :dbpassenc
 for /f "tokens=1" %%i in ('echo %decpass% ^|bin\openssl.exe enc -e -aes256 -a -k %COMPUTERNAME%') do set passenc=%%i
 
@@ -744,19 +744,19 @@ goto input3
 
 :MVCBAK
 set sel=vm
-:: VM_UUID, Pool, MasterImage µîÀ» º¹¿øÇÏ´Â ±¸°£
+:: VM_UUID, Pool, MasterImage ë“±ì„ ë³µì›í•˜ëŠ” êµ¬ê°„
 cls
-echo 5. MVCº¹¿ø
+echo 5. MVCë³µì›
 echo.
-echo ##¸Ş´ºÈ­¸é
-echo 1) VMº¹¿ø 
-echo 2) VM Pool ÄÁ³Ø¼Ç º¹¿ø
-echo 3) Catalog Master VM º¹¿ø
-echo 4) ¸ğµÎ º¹¿ø
-echo c) ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â
-echo x) ³ª°¡±â
+echo ##ë©”ë‰´í™”ë©´
+echo 1) VMë³µì› 
+echo 2) VM Pool ì»¨ë„¥ì…˜ ë³µì›
+echo 3) Catalog Master VM ë³µì›
+echo 4) ëª¨ë‘ ë³µì›
+echo c) ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°
+echo x) ë‚˜ê°€ê¸°
 
-set /p sel=ÀÔ·Â:
+set /p sel=ì…ë ¥:
 
 if %sel%==vm goto bakerr
 if %sel%==1 goto mvcbak1
@@ -771,18 +771,18 @@ if %sel%==X exit
 
 :mvcbak1
 cls
-echo 5. MVCº¹¿ø 1)VM º¹¿ø
+echo 5. MVCë³µì› 1)VM ë³µì›
 set sel=skip
 set baksql="Backup\VM\MCSbak.sql"
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\VM\MCSbak.sql"') do set bakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\VM\MCSbak.sql"') do set bakdate=%%i >nul
 echo.
-echo ¸¶Áö¸·À¸·Î ¹é¾÷ÇÑ ÀÏÀÚ´Â %bakdate% ÀÔ´Ï´Ù.
-echo %bakdate% ÀÌÀüÀ¸·Î º¹¿øÀ» ¿øÇÏ½Ã¸é °ªÀÌ ¾ø´Â »óÅÂ·Î ÀÔ·ÂÃ¢¿¡ ¿£ÅÍ¸¸ ´©¸£½Ê½Ã¿À
+echo ë§ˆì§€ë§‰ìœ¼ë¡œ ë°±ì—…í•œ ì¼ìëŠ” %bakdate% ì…ë‹ˆë‹¤.
+echo %bakdate% ì´ì „ìœ¼ë¡œ ë³µì›ì„ ì›í•˜ì‹œë©´ ê°’ì´ ì—†ëŠ” ìƒíƒœë¡œ ì…ë ¥ì°½ì— ì—”í„°ë§Œ ëˆ„ë¥´ì‹­ì‹œì˜¤
 echo.
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â¸¦ ¿øÇÏ½Ã¸é CÅ°¸¦ ÀÔ·ÂÇÏ½Ê½Ã¿À
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°ë¥¼ ì›í•˜ì‹œë©´ Cí‚¤ë¥¼ ì…ë ¥í•˜ì‹­ì‹œì˜¤
 echo.
 
-set /p baksql=ÀÔ·Â:
+set /p baksql=ì…ë ¥:
 
 if %baksql%==c goto MVCBAK
 if %baksql%==C goto MVCBAK
@@ -791,24 +791,24 @@ if %baksql%==C goto MVCBAK
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
 echo.
-echo VM º¹¿ø ¿Ï·á!
+echo VM ë³µì› ì™„ë£Œ!
 pause 
 goto main2
 
 :mvcbak2
 cls
-echo 5. MVCº¹¿ø 2) VM Pool ÄÁ³Ø¼Ç º¹¿ø
+echo 5. MVCë³µì› 2) VM Pool ì»¨ë„¥ì…˜ ë³µì›
 set sel=skip
 set baksql="Backup\Pool\poolbak.sql"
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Pool\poolbak.sql"') do set bakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Pool\poolbak.sql"') do set bakdate=%%i >nul
 echo.
-echo ¸¶Áö¸·À¸·Î ¹é¾÷ÇÑ ÀÏÀÚ´Â %bakdate% ÀÔ´Ï´Ù.
-echo %bakdate% ÀÌÀüÀ¸·Î º¹¿øÀ» ¿øÇÏ½Ã¸é °ªÀÌ ¾ø´Â »óÅÂ·Î ÀÔ·ÂÃ¢¿¡ ¿£ÅÍ¸¸ ´©¸£½Ê½Ã¿À
+echo ë§ˆì§€ë§‰ìœ¼ë¡œ ë°±ì—…í•œ ì¼ìëŠ” %bakdate% ì…ë‹ˆë‹¤.
+echo %bakdate% ì´ì „ìœ¼ë¡œ ë³µì›ì„ ì›í•˜ì‹œë©´ ê°’ì´ ì—†ëŠ” ìƒíƒœë¡œ ì…ë ¥ì°½ì— ì—”í„°ë§Œ ëˆ„ë¥´ì‹­ì‹œì˜¤
 echo. 
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â¸¦ ¿øÇÏ½Ã¸é CÅ°¸¦ ÀÔ·ÂÇÏ½Ê½Ã¿À
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°ë¥¼ ì›í•˜ì‹œë©´ Cí‚¤ë¥¼ ì…ë ¥í•˜ì‹­ì‹œì˜¤
 echo.
 
-set /p baksql=ÀÔ·Â:
+set /p baksql=ì…ë ¥:
 
 if %baksql%==c goto MVCBAK
 if %baksql%==C goto MVCBAK
@@ -817,24 +817,24 @@ if %baksql%==C goto MVCBAK
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
 echo.
-echo VM º¹¿ø ¿Ï·á!
+echo VM ë³µì› ì™„ë£Œ!
 pause 
 goto main2
 
 :mvcbak3
 cls
-echo 5. MVCº¹¿ø 3) Catalog Master VM º¹¿ø
+echo 5. MVCë³µì› 3) Catalog Master VM ë³µì›
 set sel=skip
 set baksql="Backup\Master\imagebak.sql"
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Master\imagebak.sql"') do set bakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Master\imagebak.sql"') do set bakdate=%%i >nul
 echo.
-echo ¸¶Áö¸·À¸·Î ÁøÇàÇÑ ÀÏÀÚ´Â %bakdate% ÀÔ´Ï´Ù.
-echo %bakdate% ÀÌÀüÀ¸·Î º¹¿øÀ» ¿øÇÏ½Ã¸é °ªÀÌ ¾ø´Â »óÅÂ·Î ÀÔ·ÂÃ¢¿¡ ¿£ÅÍ¸¸ ´©¸£½Ê½Ã¿À
+echo ë§ˆì§€ë§‰ìœ¼ë¡œ ì§„í–‰í•œ ì¼ìëŠ” %bakdate% ì…ë‹ˆë‹¤.
+echo %bakdate% ì´ì „ìœ¼ë¡œ ë³µì›ì„ ì›í•˜ì‹œë©´ ê°’ì´ ì—†ëŠ” ìƒíƒœë¡œ ì…ë ¥ì°½ì— ì—”í„°ë§Œ ëˆ„ë¥´ì‹­ì‹œì˜¤
 echo. 
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â¸¦ ¿øÇÏ½Ã¸é CÅ°¸¦ ÀÔ·ÂÇÏ½Ê½Ã¿À
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°ë¥¼ ì›í•˜ì‹œë©´ Cí‚¤ë¥¼ ì…ë ¥í•˜ì‹­ì‹œì˜¤
 echo.
 
-set /p baksql=ÀÔ·Â:
+set /p baksql=ì…ë ¥:
 
 if %baksql%==c goto MVCBAK
 if %baksql%==C goto MVCBAK
@@ -843,31 +843,31 @@ if %baksql%==C goto MVCBAK
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
 echo.
-echo VM º¹¿ø ¿Ï·á!
+echo VM ë³µì› ì™„ë£Œ!
 pause 
 goto main2
 
 :mvcbak4
 cls
-echo 5. MVCº¹¿ø 4) ¸ğµÎ º¹¿ø
+echo 5. MVCë³µì› 4) ëª¨ë‘ ë³µì›
 set sel=skip
 set baksql=skip
 set Vbaksql="Backup\Master\imagebak.sql"
 set Pbaksql="Backup\Pool\poolbak.sql"
 set Mbaksql="Backup\Master\imagebak.sql"
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\VM\MCSbak.sql"') do set Vbakdate=%%i >nul
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Pool\poolbak.sql"') do set Pbakdate=%%i >nul
-for /f "tokens=3" %%i in ('findstr "ÀÏÀÚ" "Backup\Master\imagebak.sql"') do set Mbakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\VM\MCSbak.sql"') do set Vbakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Pool\poolbak.sql"') do set Pbakdate=%%i >nul
+for /f "tokens=3" %%i in ('findstr "ì¼ì" "Backup\Master\imagebak.sql"') do set Mbakdate=%%i >nul
 echo.
-echo 1. VM_UUID ÁøÇàÀ» ¸¶Áö¸·À¸·Î ÁøÇàÇÑ ÀÏÀÚ´Â %Vbakdate% ÀÔ´Ï´Ù.
-echo 2. VM_UUID ÁøÇàÀ» ¸¶Áö¸·À¸·Î ÁøÇàÇÑ ÀÏÀÚ´Â %Pbakdate% ÀÔ´Ï´Ù.
-echo 3. VM_UUID ÁøÇàÀ» ¸¶Áö¸·À¸·Î ÁøÇàÇÑ ÀÏÀÚ´Â %Mbakdate% ÀÔ´Ï´Ù.
-echo ÁøÇà ÀÌÀüÀ¸·Î º¹¿øÀ» ¿øÇÏ½Ã¸é °ªÀÌ ¾ø´Â »óÅÂ·Î ÀÔ·ÂÃ¢¿¡ ¿£ÅÍ¸¸ ´©¸£½Ê½Ã¿À
+echo 1. VM_UUID ì§„í–‰ì„ ë§ˆì§€ë§‰ìœ¼ë¡œ ì§„í–‰í•œ ì¼ìëŠ” %Vbakdate% ì…ë‹ˆë‹¤.
+echo 2. VM_UUID ì§„í–‰ì„ ë§ˆì§€ë§‰ìœ¼ë¡œ ì§„í–‰í•œ ì¼ìëŠ” %Pbakdate% ì…ë‹ˆë‹¤.
+echo 3. VM_UUID ì§„í–‰ì„ ë§ˆì§€ë§‰ìœ¼ë¡œ ì§„í–‰í•œ ì¼ìëŠ” %Mbakdate% ì…ë‹ˆë‹¤.
+echo ì§„í–‰ ì´ì „ìœ¼ë¡œ ë³µì›ì„ ì›í•˜ì‹œë©´ ê°’ì´ ì—†ëŠ” ìƒíƒœë¡œ ì…ë ¥ì°½ì— ì—”í„°ë§Œ ëˆ„ë¥´ì‹­ì‹œì˜¤
 echo. 
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â¸¦ ¿øÇÏ½Ã¸é CÅ°¸¦ ÀÔ·ÂÇÏ½Ê½Ã¿À
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°ë¥¼ ì›í•˜ì‹œë©´ Cí‚¤ë¥¼ ì…ë ¥í•˜ì‹­ì‹œì˜¤
 echo.
 
-set /p baksql=ÀÔ·Â:
+set /p baksql=ì…ë ¥:
 
 if %baksql%==c goto MVCBAK
 if %baksql%==C goto MVCBAK
@@ -883,13 +883,13 @@ if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %Vbaksql%
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %Pbaksql%
 if %salist%==1 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -i %Mbaksql%
 echo.
-echo VM º¹¿ø ¿Ï·á!
+echo VM ë³µì› ì™„ë£Œ!
 pause 
 goto main2
 
 
 :bakerr
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
 pause
 goto MVCBAK
 
@@ -898,24 +898,24 @@ goto MVCBAK
 setlocal EnableDelayedExpansion
 set sel=vm
 if exist "CSV\" (goto MVCCSV) ELSE (mkdir "CSV\")
-:: VM_UUID, Pool, MasterImage CSV·Î ÀúÀå ¹× ºÒ·¯¿À´Â ±¸°£
+:: VM_UUID, Pool, MasterImage CSVë¡œ ì €ì¥ ë° ë¶ˆëŸ¬ì˜¤ëŠ” êµ¬ê°„
 :MVCCSV
 cls
-echo 6. ´Ù·®ÀÇ µ¥ÀÌÅÍ Ã³¸®ÇÏ±â (CSVÆÄÀÏ Ã³¸®)
+echo 6. ë‹¤ëŸ‰ì˜ ë°ì´í„° ì²˜ë¦¬í•˜ê¸° (CSVíŒŒì¼ ì²˜ë¦¬)
 echo.
-echo ##¸Ş´ºÈ­¸é
-echo 1) VM_UUID,VM_Pool ÄÁ³Ø¼Ç csv ¾ç½Ä ÀúÀåÇÏ±â
-echo 2) VM_UUID,VM_Pool ÄÁ³Ø¼Ç csv ºÒ·¯¿À±â
-echo 3) Catalog Master VM csv ¾ç½Ä ÀúÀåÇÏ±â
-echo 4) Catalog Master VM csv ºÒ·¯¿À±â
-echo c) ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â
-echo x) ³ª°¡±â
+echo ##ë©”ë‰´í™”ë©´
+echo 1) VM_UUID,VM_Pool ì»¨ë„¥ì…˜ csv ì–‘ì‹ ì €ì¥í•˜ê¸°
+echo 2) VM_UUID,VM_Pool ì»¨ë„¥ì…˜ csv ë¶ˆëŸ¬ì˜¤ê¸°
+echo 3) Catalog Master VM csv ì–‘ì‹ ì €ì¥í•˜ê¸°
+echo 4) Catalog Master VM csv ë¶ˆëŸ¬ì˜¤ê¸°
+echo c) ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸°
+echo x) ë‚˜ê°€ê¸°
 echo.
-echo ## ÁÖÀÇ»çÇ×! 
-echo csv¾ç½ÄÀ» ¿¢¼¿·Î ¼öÁ¤ ÈÄ ÀúÀå ½Ã *.xlsx , *.xlsm , *.xls µîÀ¸·Î ÀúÀå X
-echo ¹İµå½Ã ÀúÀåÀº *.csv Çü½ÄÀ¸·Î ÀúÀå!
+echo ## ì£¼ì˜ì‚¬í•­! 
+echo csvì–‘ì‹ì„ ì—‘ì…€ë¡œ ìˆ˜ì • í›„ ì €ì¥ ì‹œ *.xlsx , *.xlsm , *.xls ë“±ìœ¼ë¡œ ì €ì¥ X
+echo ë°˜ë“œì‹œ ì €ì¥ì€ *.csv í˜•ì‹ìœ¼ë¡œ ì €ì¥!
 
-set /p sel=ÀÔ·Â:
+set /p sel=ì…ë ¥:
 
 if %sel%==vm goto csverr
 if %sel%==1 goto mvccsv1
@@ -928,14 +928,14 @@ if %sel%==x exit
 if %sel%==X exit
 
 :csverr
-echo ¹üÀ§¸¦ ¹ş¾î³­ ÀÔ·ÂÀÔ´Ï´Ù.
+echo ë²”ìœ„ë¥¼ ë²—ì–´ë‚œ ì…ë ¥ì…ë‹ˆë‹¤.
 pause
 goto MVCCSV
 
 :mvccsv1
-echo 1) VM_UUID,VM_Pool ÄÁ³Ø¼Ç csv ¾ç½Ä ÀúÀåÇÏ±â
+echo 1) VM_UUID,VM_Pool ì»¨ë„¥ì…˜ csv ì–‘ì‹ ì €ì¥í•˜ê¸°
 echo.
-echo ÀúÀåÁß...
+echo ì €ì¥ì¤‘...
 if %salist%==0 goto mvccsv1ch1
 if %salist%==1 goto mvccsv1ch2
 
@@ -951,23 +951,23 @@ if %dbcon%==2 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "s
 
 :mvccsv1ch3
 echo.
-echo CSV\MVCCSV.csv °æ·Î·Î ÀúÀå ¿Ï·áÇÏ¿´½À´Ï´Ù!
+echo CSV\MVCCSV.csv ê²½ë¡œë¡œ ì €ì¥ ì™„ë£Œí•˜ì˜€ìŠµë‹ˆë‹¤!
 pause
 goto MVCCSV
 
 :mvccsv2
 set sel=CSV\MVCCSV.csv
 echo.
-echo 2) VM_UUID,VM_Pool ÄÁ³Ø¼Ç csv ºÒ·¯¿À±â
+echo 2) VM_UUID,VM_Pool ì»¨ë„¥ì…˜ csv ë¶ˆëŸ¬ì˜¤ê¸°
 echo.
-echo CSV\MVCCSV.csv¿¡¼­ ºÒ·¯¿À´Â °ÍÀÌ ¾Æ´Ñ ÁöÁ¤ µÈ ÆÄÀÏ·Î ºÒ·¯¿À±â¸¦ ÇÒ °æ¿ì
-echo csvÆÄÀÏÀÇ °æ·Î¸¦ ÀÔ·ÂÇÏ°Å³ª ÆÄÀÏÀ» µå·¹±× ¾Ø µå¶øÇÏ¿© °æ·Î¸¦ ÁöÁ¤
-echo ÀÔ·Â¿¹½Ã) C:\Users\user\Desktop\MVCCSV.csv
+echo CSV\MVCCSV.csvì—ì„œ ë¶ˆëŸ¬ì˜¤ëŠ” ê²ƒì´ ì•„ë‹Œ ì§€ì • ëœ íŒŒì¼ë¡œ ë¶ˆëŸ¬ì˜¤ê¸°ë¥¼ í•  ê²½ìš°
+echo csvíŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•˜ê±°ë‚˜ íŒŒì¼ì„ ë“œë ˆê·¸ ì•¤ ë“œëí•˜ì—¬ ê²½ë¡œë¥¼ ì§€ì •
+echo ì…ë ¥ì˜ˆì‹œ) C:\Users\user\Desktop\MVCCSV.csv
 echo.
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â 'C' ¹öÆ° Å¬¸¯, ³ª°¡±â 'X' ¹öÆ°
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'C' ë²„íŠ¼ í´ë¦­, ë‚˜ê°€ê¸° 'X' ë²„íŠ¼
 echo.
 echo.
-set /p sel=ÀÔ·Â ¶Ç´Â µå·¹±×¾Ø µå¶ø:
+set /p sel=ì…ë ¥ ë˜ëŠ” ë“œë ˆê·¸ì•¤ ë“œë:
 
 if %sel%==c goto MVCCSV
 if %sel%==C goto MVCCSV
@@ -975,10 +975,10 @@ if %sel%==x goto exit
 if %sel%==X goto exit
 
 :mvccsv2home
-echo ÁøÇàÁß...
+echo ì§„í–‰ì¤‘...
 for /f %%i in ('type %sel% ^|find /c /v ""') do set /a count=%%i-2
 
-:: Ã¹¹øÂ° Uid ¶óÀÎ ±¸°£
+:: ì²«ë²ˆì§¸ Uid ë¼ì¸ êµ¬ê°„
 :workuidcsv
 set "col=0"
 for /f "skip=3 tokens=2 delims=," %%c in ('find /v "" %sel%') do (
@@ -992,7 +992,7 @@ for /f "skip=3 tokens=2 delims=," %%c in ('find /v "" %sel%') do (
 :workuidend
 for /l %%a in (1,1,%count%) do set "uid%%a=!workuid%%a!"
 
-:: µÎ¹øÂ° VMName ±¸°£
+:: ë‘ë²ˆì§¸ VMName êµ¬ê°„
 :vmnamecsv
 set "col=0"
 for /f "skip=3 tokens=3 delims=," %%c in ('find /v "" %sel%') do (
@@ -1006,7 +1006,7 @@ for /f "skip=3 tokens=3 delims=," %%c in ('find /v "" %sel%') do (
 :vmnameend
 for /l %%a in (1,1,%count%) do set "vmn%%a=!vmname%%a!"
 
-:: ¼¼¹øÂ° VMUid ±¸°£
+:: ì„¸ë²ˆì§¸ VMUid êµ¬ê°„
 :vmuidcsv
 set "col=0"
 for /f "skip=3 tokens=4 delims=," %%c in ('find /v "" %sel%') do (
@@ -1021,7 +1021,7 @@ for /f "skip=3 tokens=4 delims=," %%c in ('find /v "" %sel%') do (
 for /l %%a in (1,1,%count%) do set "vmu%%a=!vmuid%%a!"
 
 
-:: ³×¹øÂ° HypervisorName ±¸°£
+:: ë„¤ë²ˆì§¸ HypervisorName êµ¬ê°„
 :hypernamecsv
 set "col=0"
 for /f "skip=3 tokens=5 delims=," %%c in ('find /v "" %sel%') do (
@@ -1035,18 +1035,18 @@ for /f "skip=3 tokens=5 delims=," %%c in ('find /v "" %sel%') do (
 :hypernameend
 for /l %%a in (1,1,%count%) do set "hypn%%a=!hypername%%a!" 
 
-:: ÁøÇà
+:: ì§„í–‰
 if %dbcon%==1 goto mvccsv2ch1
 if %dbcon%==2 goto mvccsv2ch2
 
 :mvccsv2ch1
 if %salist%==0 goto mvccsv2ch3
-::VM ±¸°£
+::VM êµ¬ê°„
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userDB%].[Chb_Config].[Workers] w Left Join [%userDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
@@ -1058,12 +1058,12 @@ goto mvccsv2ch5
 
 :mvccsv2ch2
 if %salist%==0 goto mvccsv2ch4
-::VM ±¸°£
+::VM êµ¬ê°„
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userSiteDB%].[Chb_Config].[Workers] w Left Join [%userMoDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
@@ -1074,12 +1074,12 @@ for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapas
 goto mvccsv2ch5
 
 :mvccsv2ch3
-::VM ±¸°£
+::VM êµ¬ê°„
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userDB%].[Chb_Config].[Workers] w Left Join [%userDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
@@ -1090,12 +1090,12 @@ for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 
 goto mvccsv2ch5
 
 :mvccsv2ch4
-::VM ±¸°£
+::VM êµ¬ê°„
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userSiteDB%].[Chb_Config].[Workers] w Left Join [%userMoDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
@@ -1108,15 +1108,15 @@ goto mvccsv2ch5
 
 
 :mvccsv2ch5
-echo ºÒ·¯¿À±â°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù!
+echo ë¶ˆëŸ¬ì˜¤ê¸°ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤!
 pause
 goto MVCCSV
 
 
 :mvccsv3
-echo 3) Catalog Master VM csv ¾ç½Ä ÀúÀåÇÏ±â
+echo 3) Catalog Master VM csv ì–‘ì‹ ì €ì¥í•˜ê¸°
 echo.
-echo ÀúÀåÁß...
+echo ì €ì¥ì¤‘...
 if %salist%==0 goto mvccsv3ch1
 if %salist%==1 goto mvccsv3ch2
 
@@ -1132,7 +1132,7 @@ if %dbcon%==2 sqlcmd -S %saip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "s
 
 :mvccsv3ch3
 echo.
-echo CSV\Master.csv °æ·Î·Î ÀúÀå ¿Ï·áÇÏ¿´½À´Ï´Ù!
+echo CSV\Master.csv ê²½ë¡œë¡œ ì €ì¥ ì™„ë£Œí•˜ì˜€ìŠµë‹ˆë‹¤!
 pause
 goto MVCCSV
 
@@ -1140,16 +1140,16 @@ goto MVCCSV
 :mvccsv4
 echo.
 set sel=CSV\Master.csv
-echo 4) Catalog Master VM csv ºÒ·¯¿À±â
+echo 4) Catalog Master VM csv ë¶ˆëŸ¬ì˜¤ê¸°
 echo.
-echo CSV\Master.csv¿¡¼­ ºÒ·¯¿À´Â °ÍÀÌ ¾Æ´Ñ ÁöÁ¤ µÈ ÆÄÀÏ·Î ºÒ·¯¿À±â¸¦ ÇÒ °æ¿ì
-echo csvÆÄÀÏÀÇ °æ·Î¸¦ ÀÔ·ÂÇÏ°Å³ª ÆÄÀÏÀ» µå·¹±× ¾Ø µå¶øÇÏ¿© °æ·Î¸¦ ÁöÁ¤
-echo ÀÔ·Â¿¹½Ã) C:\Users\user\Desktop\Master.csv
+echo CSV\Master.csvì—ì„œ ë¶ˆëŸ¬ì˜¤ëŠ” ê²ƒì´ ì•„ë‹Œ ì§€ì • ëœ íŒŒì¼ë¡œ ë¶ˆëŸ¬ì˜¤ê¸°ë¥¼ í•  ê²½ìš°
+echo csvíŒŒì¼ì˜ ê²½ë¡œë¥¼ ì…ë ¥í•˜ê±°ë‚˜ íŒŒì¼ì„ ë“œë ˆê·¸ ì•¤ ë“œëí•˜ì—¬ ê²½ë¡œë¥¼ ì§€ì •
+echo ì…ë ¥ì˜ˆì‹œ) C:\Users\user\Desktop\Master.csv
 echo.
-echo ÀÌÀü ¸Ş´º·Î µ¹¾Æ°¡±â 'C' ¹öÆ° Å¬¸¯, ³ª°¡±â 'X' ¹öÆ°
+echo ì´ì „ ë©”ë‰´ë¡œ ëŒì•„ê°€ê¸° 'C' ë²„íŠ¼ í´ë¦­, ë‚˜ê°€ê¸° 'X' ë²„íŠ¼
 echo.
 echo.
-set /p sel=ÀÔ·Â ¶Ç´Â µå·¹±×¾Ø µå¶ø:
+set /p sel=ì…ë ¥ ë˜ëŠ” ë“œë ˆê·¸ì•¤ ë“œë:
 
 if %sel%==c goto MVCCSV
 if %sel%==C goto MVCCSV
@@ -1157,9 +1157,9 @@ if %sel%==x goto exit
 if %sel%==X goto exit
 
 :mvccsv4home
-echo ÁøÇàÁß...
+echo ì§„í–‰ì¤‘...
 for /f %%i in ('type %sel% ^|find /c /v ""') do set /a count=%%i-2
-:: Ã¹¹øÂ° Ä«Å»·Î±× ³×ÀÓ ¶óÀÎ ±¸°£
+:: ì²«ë²ˆì§¸ ì¹´íƒˆë¡œê·¸ ë„¤ì„ ë¼ì¸ êµ¬ê°„
 :catalncsv
 set "col=0"
 for /f "skip=3 tokens=2 delims=," %%c in ('find /v "" %sel%') do (
@@ -1173,7 +1173,7 @@ for /f "skip=3 tokens=2 delims=," %%c in ('find /v "" %sel%') do (
 :catalnend
 for /l %%a in (1,1,%count%) do set "catalogname%%a=!cataln%%a!"
 
-:: µÎ¹øÂ° ProvisioningSchemeId ±¸°£
+:: ë‘ë²ˆì§¸ ProvisioningSchemeId êµ¬ê°„
 :ProvSchId
 set "col=0"
 for /f "skip=3 tokens=3 delims=," %%c in ('find /v "" %sel%') do (
@@ -1187,7 +1187,7 @@ for /f "skip=3 tokens=3 delims=," %%c in ('find /v "" %sel%') do (
 :ProvSchIdend
 for /l %%a in (1,1,%count%) do set "provid%%a=!proscid%%a!"
 
-:: ¼¼¹øÂ° HypervisorName ±¸°£
+:: ì„¸ë²ˆì§¸ HypervisorName êµ¬ê°„
 :Masterhypercsv
 set "col=0"
 for /f "skip=3 tokens=4 delims=," %%c in ('find /v "" %sel%') do (
@@ -1201,13 +1201,13 @@ for /f "skip=3 tokens=4 delims=," %%c in ('find /v "" %sel%') do (
 :Masterhyperend
 for /l %%a in (1,1,%count%) do set "hypn%%a=!hypername%%a!"  
 
-:: ÁøÇà
+:: ì§„í–‰
 if %dbcon%==1 goto mvccsv4ch1
 if %dbcon%==2 goto mvccsv4ch2
 
 :mvccsv4ch1
 if %salist%==0 goto mvccsv4ch3
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
@@ -1217,7 +1217,7 @@ goto mvccsv4ch5
 
 :mvccsv4ch2
 if %salist%==0 goto mvccsv4ch4
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %saip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
 for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
@@ -1226,7 +1226,7 @@ for /l %%t in (1,1,%count%) do sqlcmd -S %saip%^,%dbport% -U %sauser% -P "%sapas
 goto mvccsv4ch5
 
 :mvccsv4ch3
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
 for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
@@ -1235,7 +1235,7 @@ for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h 
 goto mvccsv4ch5
 
 :mvccsv4ch4
-::pool ±¸°£
+::pool êµ¬ê°„
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
 for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
@@ -1245,7 +1245,7 @@ goto mvccsv4ch5
 
 
 :mvccsv4ch5
-echo ºÒ·¯¿À±â°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù!
+echo ë¶ˆëŸ¬ì˜¤ê¸°ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤!
 echo.
 pause
 
@@ -1253,8 +1253,8 @@ goto MVCCSV
 
 :ver
 cls
-echo ÇöÀç ¹öÀü MCS VM Changer v1.3.1
+echo í˜„ì¬ ë²„ì „ MCS VM Changer v1.3.1
 echo Date 2023-02-23
-echo Copyright ¨Ï Leedk. All rights reserved.
+echo Copyright â“’ Leedk. All rights reserved.
 pause
 goto main2
