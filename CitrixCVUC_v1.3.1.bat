@@ -1,25 +1,45 @@
 @echo off 
+setlocal enabledelayedexpansion
 del "%TMP%\*.sql" "%TMP%\*.log" >nul 2>&1
-echo Citrix CVAD VDI UUID Changer v1.0.0
-echo 버전일자 2023-02-27
-title Citrix CVAD VDI UUID Changer v1.0.0
+set seldb=vm
+echo Citrix CVAD VDI UUID Changer v1.3.1
+echo 버전일자 2023-07-27
+title Citrix CVAD VDI UUID Changer v1.3.1
 set location=%~dp0
 cd %location%
 :: 인증방식 0이면 AD도메인 인증, 1이면 SQL Server 인증
 set salist=0
 :: Citrix MCS VM UUID변경 툴
 
+::백업 옵션은 기본 옵션이'1' (1이 활성화 0이 비활성화)
+set bkoption=1
+
+:: bin 폴더 유무
+IF EXIST bin (
+goto mvcconfig
+) ELSE (
+ goto notbin
+)
+
+:notbin
+echo.
+echo bin 폴더가 존재하지 않습니다. 
+echo 실행된 경로에서 bin폴더 빠지지 않았는지 다시한번 확인해주세요. 
+pause 
+exit
+
+:mvcconfig
+:: config 파일 유무
 IF EXIST config.conf (
 goto ODBC
 ) ELSE (
- goto input
+ goto main
 )
 :: pause
 
+
 :input
 cls
-::백업 옵션은 기본 옵션이'1' (1이 활성화 0이 비활성화)
-set bkoption=1
 set dbport=1433
 echo CitrixCVUC 초기구성 Config 구성 
 echo 구성 완료 시 CitrixCVUC.bat 경로에 Config.conf 파일 생성
@@ -35,6 +55,12 @@ echo 2.DB서버Port 입력
 echo 입력안하고 넘어갈 시 기본 1433포트로 자동 입력
 set /p dbport=입력:
 echo.
+if %seldb%==vm goto main
+if %seldb%==1 set dbcon=1 & goto input1
+if %seldb%==2 set dbcon=1 & goto selc1
+if %seldb%==3 set dbcon=2 & goto input2
+if %seldb%==4 set dbcon=2 & goto selc1
+
 :: DB 싱글 및 분할 구성 선택
 :main
 set seldb=vm
@@ -57,10 +83,10 @@ echo.
 set /p seldb=입력:
 
 if %seldb%==vm goto derr
-if %seldb%==1 set dbcon=1 & goto input1
-if %seldb%==2 set dbcon=1 & goto selc1
-if %seldb%==3 set dbcon=2 & goto input1
-if %seldb%==4 set dbcon=2 & goto selc1
+if %seldb%==1 goto input
+if %seldb%==2 goto input
+if %seldb%==3 goto input
+if %seldb%==4 goto input
 if %seldb%==x exit
 if %seldb%==X exit
 if %seldb%==c if exist "config.conf" (goto main2) ELSE (goto input)
@@ -92,7 +118,10 @@ goto input3
 if %computername%==%userdomain% goto selc1
 
 echo 3-2. 분할 DB 설정 
+echo 1. CVAD DB Site명 입력
 set /p userSiteDB=입력:
+echo.
+echo 2. CVAD DB Monitor명 입력
 set /p userMoDB=입력:
 
 :input3
@@ -210,6 +239,8 @@ set Path=%Path%;%ProgramFiles%\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Bi
 
 
 :confdb
+setlocal EnableDelayedExpansion
+set sapass=err
 for /f "tokens=2" %%i in ('findstr "salist" config.conf') do set salist=%%i
 for /f "tokens=2" %%i in ('findstr "userDBip" config.conf') do set userDBip=%%i
 for /f "tokens=2" %%i in ('findstr "dbport" config.conf') do set dbport=%%i
@@ -221,9 +252,21 @@ for /f "tokens=2" %%i in ('findstr "bkoption" config.conf') do set bkoption=%%i
 for /f "tokens=2" %%i in ('findstr "sauser" config.conf') do set sauser=%%i
 for /f "tokens=2" %%i in ('findstr "sapass" config.conf') do set passenc=%%i
 echo.
-for /f "tokens=1" %%i in ('echo %passenc%^= ^|bin\openssl.exe enc -d -aes256 -a -k %COMPUTERNAME%')do set sapass=%%i
+
+echo %passenc% |bin\openssl.exe enc -d -aes256 -a -k %COMPUTERNAME% > "%TMP%\sapass.txt"
+set /p sapass=<"%TMP%\sapass.txt"
+set sa2pass=!sapass!
+if !sapass!==err goto sapassline
+
+
+:sapassline
+if NOT !sapass!==err goto main2
+echo %passenc%= |bin\openssl.exe enc -d -aes256 -a -k %COMPUTERNAME% > "%TMP%\sapass.txt"
+set /p sapass=<"%TMP%\sapass.txt"
+set sa2pass=!sapass!
 
 :main2
+del "%TMP%\sapass.txt"
 if %singleDB%==Enable set dbcon=1
 if %singleDB%==Disable set dbcon=2
 set sel=vm
@@ -232,13 +275,14 @@ if %dbcon%==2 set bsel=분할
 if %salist%==0 set dbuserauto=AD도메인인증
 if %salist%==1 set dbuserauto=SQL Server 인증
 cls
-:: echo %salist%
+:: echo 확인용도 %salist%
 echo VM UUID,Pool 컨넥션 변경,카탈로그 마스터 VM 변경 및 DB 구성 변경 메뉴
 echo.
 echo ## CitrixCVUC Tools 설정 방식
 echo -- 설정 변경 필요 시 '4'번 입력 또는 config.conf 파일 편집
 echo 현재 Citrix Controller DB 방식은( %bsel% )방식입니다. 
 echo 현재 CitrixCVUC Tools DB 계정 방식은 ( %dbuserauto% ) 방식입니다.
+:: echo 패스워드 !sapass! 
 echo.
 echo ## 옵션 선택
 echo.
@@ -298,8 +342,8 @@ if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -E -W -h
 goto mcsvmvar3
 
 :mcsvmvar2
-if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userDB%].[MonitorData].[Machine] where HostedMachineId='%useuuid%'"') do set usename=%%i
-if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userMoDB%].[MonitorData].[Machine] where HostedMachineId='%useuuid%'"') do set usename=%%i
+if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userDB%].[MonitorData].[Machine] where HostedMachineId='%useuuid%'"') do set usename=%%i
+if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userMoDB%].[MonitorData].[Machine] where HostedMachineId='%useuuid%'"') do set usename=%%i
 
 :mcsvmvar3
 echo SET QUOTED_IDENTIFIER ON > "%TMP%\MCS.sql"
@@ -325,7 +369,7 @@ echo SET VMId = '%chuuid%' >> "%TMP%\MCS.sql"
 echo WHERE VMId = '%useuuid%' >> "%TMP%\MCS.sql"
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MCS.sql"
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\MCS.sql"
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i "%TMP%\MCS.sql"
 
 echo.
 echo MCS VM(%usename%)이 기존 %useuuid%에서 %chuuid%로 변경되었습니다.
@@ -401,12 +445,12 @@ if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -E -W -h
 goto poolvar3
 
 :poolvar2
-if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionUid] FROM [%userDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%'"') do set vmp=%%i
-if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userDB%].[chb_Config].[HypervisorConnections] where Uid='%vmp%'"') do set vmp1=%%i
-if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userDB%].[MonitorData].[Machine] where HostedMachineId='%chuuid%'"') do set chname=%%i
-if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionUid] FROM [%userSiteDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%'"') do set vmp=%%i
-if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] where Uid='%vmp%'"') do set vmp1=%%i
-if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userMoDB%].[MonitorData].[Machine] where HostedMachineId='%chuuid%'"') do set chname=%%i
+if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionUid] FROM [%userDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%'"') do set vmp=%%i
+if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userDB%].[chb_Config].[HypervisorConnections] where Uid='%vmp%'"') do set vmp1=%%i
+if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userDB%].[MonitorData].[Machine] where HostedMachineId='%chuuid%'"') do set chname=%%i
+if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionUid] FROM [%userSiteDB%].[chb_Config].[Workers] where HostedMachineId='%chuuid%'"') do set vmp=%%i
+if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] where Uid='%vmp%'"') do set vmp1=%%i
+if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HostedMachineName] FROM [%userMoDB%].[MonitorData].[Machine] where HostedMachineId='%chuuid%'"') do set chname=%%i
 
 :poolvar3
 echo 현재 VM(%chname%)에 등록된 하이퍼바이저 Uid번호 는 %vmp: =%번 입니다.
@@ -422,8 +466,8 @@ if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (DisplayName
 goto ch3
 
 :ch22
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (DisplayName,0,30) AS HyperVisorName,[Uid] from [%userDB%].[chb_Config].[HypervisorConnections]"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (DisplayName,0,30) AS HyperVisorName,[Uid] from [%userSiteDB%].[chb_Config].[HypervisorConnections]"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (DisplayName,0,30) AS HyperVisorName,[Uid] from [%userDB%].[chb_Config].[HypervisorConnections]"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (DisplayName,0,30) AS HyperVisorName,[Uid] from [%userSiteDB%].[chb_Config].[HypervisorConnections]"
 
 
 :ch3
@@ -441,8 +485,8 @@ if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -E -W -h
 goto ch33
 
 :ch32
-if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userDB%].[chb_Config].[HypervisorConnections] where Uid='%poolin%'"') do set poolin1=%%i
-if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] where Uid='%poolin%'"') do set poolin1=%%i
+if %dbcon%==1 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userDB%].[chb_Config].[HypervisorConnections] where Uid='%poolin%'"') do set poolin1=%%i
+if %dbcon%==2 for /f "tokens=1" %%i in ('sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -W -h -1 -Q "set nocount on; SELECT [HypervisorConnectionId] FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] where Uid='%poolin%'"') do set poolin1=%%i
 
 :ch33
 echo SET QUOTED_IDENTIFIER ON > "%TMP%\Pool.sql"
@@ -469,7 +513,7 @@ echo WHERE VMId = '%chuuid%' >> "%TMP%\Pool.sql"
 echo.
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\Pool.sql"
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\Pool.sql"
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i "%TMP%\Pool.sql"
 
 echo VM(%chname%). %vmp: =%번에서 %poolin%번 풀 변경 완료!
 
@@ -548,49 +592,49 @@ if %salist%==0 goto ch41
 if %salist%==1 goto ch42
 
 :mokrokc1
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
 goto iprueck
 
 :mokrokc2
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
 goto iprueck
 
 :ch41
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
 set /p ProvSID=<"%TMP%\ctluuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
 set /p chProvSID=<"%TMP%\chctluuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
 set /p HypUID=<"%TMP%\hypuuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
 set /p chHypUID=<"%TMP%\chhypuuid.log"
 
 goto ch5
 
 :ch42
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\ctluuid.log"
 set /p ProvSID=<"%TMP%\ctluuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [ProvisioningSchemeId] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [ProvisioningSchemeId] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chctluuid.log"
 set /p chProvSID=<"%TMP%\chctluuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%ctl%'" |more +2 > "%TMP%\hypuuid.log"
 set /p HypUID=<"%TMP%\hypuuid.log"
 
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [CatalogName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [HypervisorConnectionUid] From [%userDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -W -Q "select [HypervisorConnectionUid] From [%userSiteDB%].[chb_Config].[Catalogs] where [DisplayName] like '%chctl%'" |more +2 > "%TMP%\chhypuuid.log"
 set /p chHypUID=<"%TMP%\chhypuuid.log"
 
 goto ch5
@@ -610,45 +654,45 @@ if %dbcon%==2 goto ch52
 :ch51
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET ProvisioningSchemeId = '%chProvSID%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET HypervisorConnectionUid = '%chHypUID: =%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET ProvisioningSchemeId = '%ProvSID%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET HypervisorConnectionUid = '%HypUID: =%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "%TMP%\MasterVM.sql"
 
 goto ch53
 
 :ch52
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET ProvisioningSchemeId = '%chProvSID%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET HypervisorConnectionUid = '%chHypUID: =%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET ProvisioningSchemeId = '%ProvSID%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "%TMP%\MasterVM.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "%TMP%\MasterVM.sql"
 echo SET HypervisorConnectionUid = '%HypUID: =%' >> "%TMP%\MasterVM.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "%TMP%\MasterVM.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "%TMP%\MasterVM.sql"
 
 :ch53
 echo. >> "%TMP%\MasterVM.sql"
 echo.
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i "%TMP%\MasterVM.sql"
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i "%TMP%\MasterVM.sql"
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i "%TMP%\MasterVM.sql"
 
 :: cls
 echo 마스터 VM 변경 완료!
@@ -659,14 +703,14 @@ if %salist%==0 goto ch54
 if %salist%==1 goto ch55
 
 :ch54
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -E -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
 
 goto MasterBK
 
 :ch55
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -Q "select substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -Q "select substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;"
 
 :MasterBK
 if %bkoption%==0 goto ch56
@@ -690,38 +734,38 @@ if %dbcon%==2 goto MABK2
 :MABK1
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET ProvisioningSchemeId = '%chProvSID%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET HypervisorConnectionUid = '%chHypUID: =%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET ProvisioningSchemeId = '%ProvSID%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET HypervisorConnectionUid = '%HypUID: =%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "Backup\Master\imagebak.sql"
 
 goto ch56
 
 :MABK2
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET ProvisioningSchemeId = '%chProvSID%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET HypervisorConnectionUid = '%chHypUID: =%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%chctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%chctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET ProvisioningSchemeId = '%ProvSID%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "Backup\Master\imagebak.sql"
 
 echo UPDATE [%userSiteDB%].[chb_Config].[Catalogs] >> "Backup\Master\imagebak.sql"
 echo SET HypervisorConnectionUid = '%HypUID: =%' >> "Backup\Master\imagebak.sql"
-echo WHERE [CatalogName] = '%ctl%' >> "Backup\Master\imagebak.sql"
+echo WHERE [DisplayName] = '%ctl%' >> "Backup\Master\imagebak.sql"
 
 :ch56
 pause 
@@ -754,7 +798,7 @@ echo.
 echo 3.DB %sauser% 계정 패스워드 입력
 call :mssqlPass usersapass "입력: "
 echo.
-
+exit /b
 :selc2
 cls
 set userSiteDB=c
@@ -777,42 +821,39 @@ echo.
 echo 4.DB %sauser% 계정 패스워드 입력
 call :mssqlPass usersapass "입력: "
 echo.
+exit /b
 
-
-:mssqlPass
-set "decpass="
-
-for /f %%a in ('"prompt;$H&for %%b in (0) do rem"') do set "BS=%%a"
-
-
-set /p "=%~2" <nul 
+:mssqlPass    
+SetLocal DisableDelayedExpansion
+echo 입력:
+Set "Line="
+For /F %%# In ('"Prompt;$H&For %%# in (1) Do Rem"') Do Set "BS=%%#"
 
 :PassLoop
-set "key="
-for /f "delims=" %%a in ('xcopy /l /w "%~f0" "%~f0" 2^>nul') do if not defined key set "key=%%a"
-set "key=%key:~-1%"
+Set "Key="
+For /F "delims=" %%# In (
+'Xcopy /L /W "%~f0" "%~f0" 2^>Nul'
+) Do If Not Defined Key Set "Key=%%#"
+Set "Key=%Key:~-1%"
+SetLocal EnableDelayedExpansion
+If Not Defined Key Goto :PassEnd
+If %BS%==^%Key% (Set /P "=%BS% %BS%" <Nul
+Set "Key="
+If Defined Line Set "Line=!Line:~0,-1!"
+) Else Set /P "=*" <Nul
+If Not Defined Line (EndLocal &Set "Line=%Key%"
+) Else For /F delims^=^ eol^= %%# In (
+"!Line!") Do EndLocal &Set "Line=%%#%Key%"
+goto :PassLoop
 
-if defined key (
-    if "%key%"=="%BS%" (
-        if defined decpass (
-            set "decpass=%decpass:~0,-1%"
-            set /p "=!BS! !BS!"<nul
-        )
-    ) else (
-        set "decpass=%decpass%%key%"
-        set /p "="<nul
-    )
-    goto :PassLoop
-)
-echo/
 
-set "%~1=%decpass%"
-
-set userDBip=%userDBip%
-
+:PassEnd
 ::암호화
+echo(
+for /f "tokens=1" %%i in ('echo !Line! ^|bin\openssl.exe enc -e -aes256 -a -k %COMPUTERNAME%') do set passenc=%%i
+goto dbpassenc
 :dbpassenc
-for /f "tokens=1" %%i in ('echo %decpass% ^|bin\openssl.exe enc -e -aes256 -a -k %COMPUTERNAME%') do set passenc=%%i
+set userDBip=%userDBip%
 
 goto input3
 
@@ -865,7 +906,7 @@ if %baksql%==C goto MVCBAK
 
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %baksql%
 echo.
 echo VM 복원 완료!
 pause 
@@ -891,7 +932,7 @@ if %baksql%==C goto MVCBAK
 
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %baksql%
 echo.
 echo VM 복원 완료!
 pause 
@@ -917,7 +958,7 @@ if %baksql%==C goto MVCBAK
 
 
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %baksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %baksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %baksql%
 echo.
 echo VM 복원 완료!
 pause 
@@ -955,9 +996,9 @@ goto mvcbak4
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %Vbaksql%
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %Pbaksql%
 if %salist%==0 sqlcmd -E -S %userDBip%,%dbport% -i %Mbaksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %Vbaksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %Pbaksql%
-if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -i %Mbaksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %Vbaksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %Pbaksql%
+if %salist%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -i %Mbaksql%
 echo.
 echo VM 복원 완료!
 pause 
@@ -1022,8 +1063,8 @@ if %dbcon%==2 sqlcmd -E -S %userDBip%,%dbport% -s"," -W -Q "set nocount on; sele
 goto mvccsv1ch3
 
 :mvccsv1ch2
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "set nocount on; select row_number() over (order by A.Uid desc) AS Num,A.Uid,HostedMachineName AS VMName,A.HostedMachineId AS VMUid,substring (B.DisplayName,0,20) AS HypervisorName from [%userDB%].[Chb_Config].[Workers] A LEFT OUTER JOIN [%userDB%].[chb_Config].[HypervisorConnections] B ON A.HypervisorConnectionUid = B.Uid LEFT OUTER JOIN [%userDB%].[MonitorData].[Machine] C ON A.HostedMachineId = C.HostedMachineId" -o CSV\MVCCSV.csv -s ","
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "set nocount on; select row_number() over (order by A.Uid desc) AS Num,A.Uid,HostedMachineName AS VMName,A.HostedMachineId AS VMUid,substring (B.DisplayName,0,20) AS HypervisorName from [%userSiteDB%].[Chb_Config].[Workers] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[HypervisorConnections] B ON A.HypervisorConnectionUid = B.Uid LEFT OUTER JOIN [%userMoDB%].[MonitorData].[Machine] C ON A.HostedMachineId = C.HostedMachineId" -o CSV\MVCCSV.csv -s ","
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -s"," -W -Q "set nocount on; select row_number() over (order by A.Uid desc) AS Num,A.Uid,HostedMachineName AS VMName,A.HostedMachineId AS VMUid,substring (B.DisplayName,0,20) AS HypervisorName from [%userDB%].[Chb_Config].[Workers] A LEFT OUTER JOIN [%userDB%].[chb_Config].[HypervisorConnections] B ON A.HypervisorConnectionUid = B.Uid LEFT OUTER JOIN [%userDB%].[MonitorData].[Machine] C ON A.HostedMachineId = C.HostedMachineId" -o CSV\MVCCSV.csv -s ","
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -s"," -W -Q "set nocount on; select row_number() over (order by A.Uid desc) AS Num,A.Uid,HostedMachineName AS VMName,A.HostedMachineId AS VMUid,substring (B.DisplayName,0,20) AS HypervisorName from [%userSiteDB%].[Chb_Config].[Workers] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[HypervisorConnections] B ON A.HypervisorConnectionUid = B.Uid LEFT OUTER JOIN [%userMoDB%].[MonitorData].[Machine] C ON A.HostedMachineId = C.HostedMachineId" -o CSV\MVCCSV.csv -s ","
 
 :mvccsv1ch3
 echo.
@@ -1118,34 +1159,34 @@ if %dbcon%==2 goto mvccsv2ch2
 :mvccsv2ch1
 if %salist%==0 goto mvccsv2ch3
 ::VM 구간
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userDB%].[Chb_Config].[Workers] w Left Join [%userDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userDB%].[Chb_Config].[Workers] w Left Join [%userDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
 ::pool 구간
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HypervisorId = '!hypi%%t!' WHERE HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HypervisorConnectionUid = '!hypu%%t!' WHERE HostedMachineId = '!vmu%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] SET HypervisorConnectionUid = '!hypi%%t!' WHERE VMId = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[MonitorData].[Machine] Set HypervisorId = '!hypi%%t!' WHERE HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[Chb_Config].[Workers] Set HypervisorConnectionUid = '!hypu%%t!' WHERE HostedMachineId = '!vmu%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] SET HypervisorConnectionUid = '!hypi%%t!' WHERE VMId = '!vmn%%t!'"
 
 goto mvccsv2ch5
 
 :mvccsv2ch2
 if %salist%==0 goto mvccsv2ch4
 ::VM 구간
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userSiteDB%].[Chb_Config].[Workers] w Left Join [%userMoDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HostedMachineId = '!vmu%%t!' WHERE HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HostedMachineId = '!vmu%%t!' FROM [%userSiteDB%].[Chb_Config].[Workers] w Left Join [%userMoDB%].[MonitorData].[Machine] m ON w.HostedMachineId = m.HostedMachineId where m.HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] Set VMId = '!vmu%%t!' WHERE VMName = '!vmn%%t!'"
 
 ::pool 구간
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select HypervisorConnectionId FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypi%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HypervisorId = '!hypi%%t!' WHERE HostedMachineName = '!vmn%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HypervisorConnectionUid = '!hypu%%t!' WHERE HostedMachineId = '!vmu%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] SET HypervisorConnectionUid = '!hypi%%t!' WHERE VMId = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userMoDB%].[MonitorData].[Machine] Set HypervisorId = '!hypi%%t!' WHERE HostedMachineName = '!vmn%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[Chb_Config].[Workers] Set HypervisorConnectionUid = '!hypu%%t!' WHERE HostedMachineId = '!vmu%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[DesktopUpdateManagerSchema].[ProvisionedVirtualMachine] SET HypervisorConnectionUid = '!hypi%%t!' WHERE VMId = '!vmn%%t!'"
 
 goto mvccsv2ch5
 
@@ -1197,14 +1238,14 @@ if %salist%==0 goto mvccsv3ch1
 if %salist%==1 goto mvccsv3ch2
 
 :mvccsv3ch1
-if %dbcon%==1 sqlcmd -E -S %userDBip%,%dbport% -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
-if %dbcon%==2 sqlcmd -E -S %userDBip%,%dbport% -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
+if %dbcon%==1 sqlcmd -E -S %userDBip%,%dbport% -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
+if %dbcon%==2 sqlcmd -E -S %userDBip%,%dbport% -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
 
 goto mvccsv3ch3
 
 :mvccsv3ch2
-if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
-if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P "%sapass%" -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (CatalogName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
+if %dbcon%==1 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
+if %dbcon%==2 sqlcmd -S %userDBip%,%dbport% -U %sauser% -P !sapass! -s"," -W -Q "set nocount on; select row_number() over (order by B.Uid desc) AS Num,substring (B.DisplayName,0,20) AS CatalogName,[ProvisioningSchemeId],substring (A.DisplayName,0,20) AS HypervisorName FROM [%userSiteDB%].[chb_Config].[HypervisorConnections] A LEFT OUTER JOIN [%userSiteDB%].[chb_Config].[Catalogs]  B ON A.Uid = B.HypervisorConnectionUid;" -o CSV\Master.csv -s ","
 
 :mvccsv3ch3
 echo.
@@ -1284,20 +1325,20 @@ if %dbcon%==2 goto mvccsv4ch2
 :mvccsv4ch1
 if %salist%==0 goto mvccsv4ch3
 ::pool 구간
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE CatalogName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE DisplayName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE DisplayName = '!catalogname%%t!'"
 
 goto mvccsv4ch5
 
 :mvccsv4ch2
 if %salist%==0 goto mvccsv4ch4
 ::pool 구간
-for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P "%sapass%" -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
+for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -S %userDBip%^^^,%dbport% -U %sauser% -P !sapass! -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P "%sapass%" -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE CatalogName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE DisplayName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S %userDBip%^,%dbport% -U %sauser% -P !sapass! -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE DisplayName = '!catalogname%%t!'"
 
 goto mvccsv4ch5
 
@@ -1305,8 +1346,8 @@ goto mvccsv4ch5
 ::pool 구간
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE CatalogName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE DisplayName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -S -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE DisplayName = '!catalogname%%t!'"
 
 goto mvccsv4ch5
 
@@ -1314,8 +1355,8 @@ goto mvccsv4ch5
 ::pool 구간
 for /l %%t in (1,1,%count%) do for /f "tokens=*" %%i in ('sqlcmd -E -S %userDBip%^^^,%dbport% -s"=" -W -h -1 -Q "set nocount on; select Uid FROM %userSiteDB%.chb_Config.HypervisorConnections where DisplayName = '!hypn%%t!'"') do set hypu%%t=%%i
 
-for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE CatalogName = '!catalogname%%t!'"
-for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE CatalogName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set ProvisioningSchemeId = '!provid%%t!' WHERE DisplayName = '!catalogname%%t!'"
+for /l %%t in (1,1,%count%) do sqlcmd -E -S %userDBip%^,%dbport% -s"," -W -h -1 -Q "SET QUOTED_IDENTIFIER ON; Update [%userSiteDB%].[chb_Config].[Catalogs] Set HypervisorConnectionUid = '!hypu%%t!' WHERE DisplayName = '!catalogname%%t!'"
 
 goto mvccsv4ch5
 
@@ -1330,8 +1371,8 @@ goto MVCCSV
 
 :ver
 cls
-echo 현재 버전 Citrix CVAD VDI UUID Changer v1.0.0 
-echo Date 2023-02-27
+echo 현재 버전 Citrix CVAD VDI UUID Changer v1.3.1
+echo Date 2023-07-27
 echo Copyright ⓒ Leedk. All rights reserved.
 echo.
 pause
