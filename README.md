@@ -35,7 +35,8 @@ Citrix VDI 관련 UUID 변경 툴
 - 과정1: 기존의 MVCCSV.csv 파일 변경 진행 
 - 주의: 해당 csv양식에서 VMUid,HypervisorName 2개의 컬럼 내용만 변경이 가능합니다.
     - 추가로 VMName 컬럼은 해당 하이퍼바이저의 VM명과 일치하도록 진행합니다. 
-    - 예시) leedkTEST01 --> Copy_leedkTEST01 X
+    - 예시)
+    -      leedkTEST01 --> Copy_leedkTEST01 X
     -      leedkTEST01 --> leedkTEST01 O
 - 캡쳐 내용참고
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/bb880c67-5bac-413c-879e-1c9f2d257708)
