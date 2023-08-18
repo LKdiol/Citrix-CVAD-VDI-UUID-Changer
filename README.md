@@ -32,11 +32,11 @@ Citrix VDI 관련 UUID 변경 툴
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/ab724ca1-8fc4-449f-8b2b-69723c93d9bb)
 
 ## 2) CSV양식에서 값 변경 후 불러오기 진행
-과정1: 기존의 MVCCSV.csv 파일 변경 진행 
-주의: 해당 csv양식에서 VMUid,HypervisorName 2개의 컬럼 내용만 변경이 가능합니다.
-    추가로 VMName 컬럼은 해당 하이퍼바이저의 VM명과 일치하도록 진행합니다. 
-    예시) leedkTEST01 --> Copy_leedkTEST01 X
-         leedkTEST01 --> leedkTEST01 O
+- 과정1: 기존의 MVCCSV.csv 파일 변경 진행 
+- 주의: 해당 csv양식에서 VMUid,HypervisorName 2개의 컬럼 내용만 변경이 가능합니다.
+    - 추가로 VMName 컬럼은 해당 하이퍼바이저의 VM명과 일치하도록 진행합니다. 
+    - 예시) leedkTEST01 --> Copy_leedkTEST01 X
+           / leedkTEST01 --> leedkTEST01 O
 - 캡쳐 내용참고
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/bb880c67-5bac-413c-879e-1c9f2d257708)
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/e8740fda-7ff6-49ae-965c-1d7dfbc489b7)
@@ -44,7 +44,7 @@ Citrix VDI 관련 UUID 변경 툴
 
 
 과정2: MVC.bat 메인메뉴 6번 입력 --> 다량의 데이터 처리하기 메뉴에서 2번 입력 --> 불러올 CSV파일 드래그앤 드랍 및 파일경로 입력하기
-참고: 파일경로 입력이 띄어쓰기가 있으면 경로에 "C:\Users\user\Desktop\MVCCSV.csv" 첫글자와 끝글자에 쌍따옴표" 을 붙여서 진행
+- 참고: 파일경로 입력이 띄어쓰기가 있으면 경로에 "C:\Users\user\Desktop\MVCCSV.csv" 첫글자와 끝글자에 쌍따옴표" 을 붙여서 진행
 - 공란으로 비운 상태로 엔터만 입력 시 기본경로인 "CSV\MVCCSV.csv" 으로 자동 지정, 이건 해당 파일이 있으시만 해당
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/d2826dcf-cc59-4080-a3bd-e4207bfeaeeb)
 
