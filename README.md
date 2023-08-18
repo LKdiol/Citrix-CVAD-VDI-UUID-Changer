@@ -48,3 +48,11 @@ Citrix VDI 관련 UUID 변경 툴
 공란으로 비운 상태로 엔터만 입력 시 기본경로인 "CSV\MVCCSV.csv" 으로 자동 지정, 이건 해당 파일이 있으시만 해당
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/d2826dcf-cc59-4080-a3bd-e4207bfeaeeb)
 
+## 3) 최종 결과
+Citrix Studio상 컨넥션만 확인이 가능 
+부팅 시 XenServer가 아닌 VMware ESXi 서버로 부팅 되는 것을 확인 , MCS VM의 하이퍼바이저 풀간 마이그레이션 성공
+변경 후 Citrix Studio에서 해당 VM의 PowerState가 Uknown으로 나올 시 모든 DDC컨트롤러 서버의 Citrix Broker Service 재기동 진행
+![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/a6cb5e0b-299a-4271-872a-9ecd8d674157)
+![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/ce8b7ef6-47d2-4f05-9789-3aee108a8d39)
+
+
