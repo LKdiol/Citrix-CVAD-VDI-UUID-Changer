@@ -27,12 +27,19 @@ Citrix VDI 관련 UUID 변경 툴
 * 압축 풀기 후 bin디렉토리내에 내용과 같이 압축 풀기 진행 
 * bat경로내에 bin디렉토리가 존재하지 않을 시 작동 불가, bin내 파일이 없을 시 작동불가
 
-* 과정: MVC_x._ver.bat 실행 --> SQL 서버 인증 방식 선택(예시는 4. 분할 구성 (SQL Server 인증)) --> 
+* 과정: MVC_x._ver.bat 실행 --> SQL 서버 인증 방식 선택(예시는 4. 분할 구성 (SQL Server 인증)) --> DB서버 접속 정보 입력(단 미러 서버로 구성 시 주서버만 입력)
+
+  --> Site,Monitoring DB명/DB_User,Password 입력 --> ODBC,SQLCMD 미설치 시 자동설치 진행(자동으로 관리자권한으로 설치)
+  --> 설치 완료 후 메인화면 및 config.conf파일 생성 확인
+
+  DB패스워드(sapass)부분은 보안상 암호화로 저장
+
 <img width="448" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/90279711-4844-46ee-a946-5428bd894e8a">
 <img width="876" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/a7411919-3541-4a7c-9608-d137edf97062">
-
-
-
+<img width="460" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/258239cc-e9df-4a8b-b1a3-bf4ecd49a455">
+<img width="1312" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/d236ebb4-240b-47f1-9142-652ad91e675e">
+<img width="528" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/434d4c9c-c75c-4196-9414-02253cbe2647">
+<img width="945" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/e975095a-50d0-41df-8ec7-3f879a59adea">
 
 
 
