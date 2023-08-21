@@ -4,8 +4,37 @@ Citrix VDI 관련 UUID 변경 툴
 ## 실행화면
 ![image](https://user-images.githubusercontent.com/126259075/233948774-ee8e7256-c71f-40f0-85fa-e059bc255e38.png)
 
+----------
+
+개요:
+
+* 해당 툴의 목적은 기존 운영중인 기존(예시:Xenserver)가상화 시스템에서 다른(예시:VMware ESXi)전환 될 Hypervisor 풀에서
+  신규로 Master 이미지를 만든 후 카탈로그를 추가 생성하여 진행해야 되지만 해당 툴은 기존 카탈로그에서도 풀간 전환이 가능하도록 만들었습니다.
+* Exising 카탈로그에서는 파워쉘 등으로 UUID 및 컨넥션 변경이 일부 가능하지만 MCS 방식인 Dedicated,Pooled VM에서는 변경이 불가능하게 되어있습니다.
+* 이를 가능하기 위해 SQL 쿼리를 이용하여 UUID 및 Hypervisor 컨넥션등을 강제로 교체할 수 있습니다.
+* 해당 툴에서는 MSSQL 쿼리를 적용하는 방식인 SQLCMD 커맨드가 적용 되어있습니다.
+* 해당 툴은 7.6 ~ 7 2203 버전까지 테스트 완료하여 정상적으로 작동 되는 것을 확인했습니다.
+
+(모든 7버전에서 될 것으로 예상되나 7.6 이상에서 사용하는 것을 권장드립니다.)
+
+(그 이하 버전인 6버전 및 5버전은 테이블 방식이 다름으로 권장하지 않습니다.)
 ## 주의사항
-진행하기전에 CVAD DB백업 후 진행하는 것을 권장드립니다.  
+## !! 진행하기전에 CVAD DB를 백업 후 진행하는 것을 권장드립니다.  
+----------
+
+# 0. 초기 구성
+## 1) MVC_X._Ver.bat 실행
+* 압축 풀기 후 bin디렉토리내에 내용과 같이 압축 풀기 진행 
+* bat경로내에 bin디렉토리가 존재하지 않을 시 작동 불가, bin내 파일이 없을 시 작동불가
+
+* 과정: MVC_x._ver.bat 실행 --> SQL 서버 인증 방식 선택(예시는 4. 분할 구성 (SQL Server 인증)) --> 
+<img width="448" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/90279711-4844-46ee-a946-5428bd894e8a">
+<img width="876" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/a7411919-3541-4a7c-9608-d137edf97062">
+
+
+
+
+
 
 # 1. 단일모드 구성
 ## 1) VM_UUID 변경
@@ -46,7 +75,7 @@ Citrix VDI 관련 UUID 변경 툴
 
 과정2: MVC.bat 메인메뉴 6번 입력 --> 다량의 데이터 처리하기 메뉴에서 2번 입력 --> 불러올 CSV파일 드래그앤 드랍 및 파일경로 입력하기
 - 참고: 파일경로 입력이 띄어쓰기가 있으면 경로에 "C:\Users\user\Desktop\MVCCSV.csv" 첫글자와 끝글자에 쌍따옴표" 을 붙여서 진행
-- 공란으로 비운 상태로 엔터만 입력 시 기본경로인 "CSV\MVCCSV.csv" 으로 자동 지정, 이건 해당 파일이 있으시만 해당
+- 공란으로 비운 상태로 엔터만 입력 시 기본경로인 "CSV\MVCCSV.csv" 으로 자동 지정, 이건 해당 파일이 있을시만 해당
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/d2826dcf-cc59-4080-a3bd-e4207bfeaeeb)
 
 ## 3) 최종 결과
