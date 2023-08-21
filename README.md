@@ -8,7 +8,7 @@ Citrix VDI 관련 UUID 변경 툴
 
 # 개요
 
-* 해당 툴의 목적은 기존 운영중인 기존(예시:Xenserver)가상화 시스템에서 다른(예시:VMware ESXi)전환 될 Hypervisor 풀에서
+* 해당 툴의 목적은 운영중인 기존(예시:Xenserver)가상화 시스템에서 다른(예시:VMware ESXi)가상화 시스템으로 전환 될 Hypervisor 풀에서
   신규로 Master 이미지를 만든 후 카탈로그를 추가 생성하여 진행해야 되지만 해당 툴은 기존 카탈로그에서도 풀간 전환이 가능하도록 만들었습니다.
 * Exising 카탈로그에서는 파워쉘 등으로 UUID 및 컨넥션 변경이 일부 가능하지만 MCS 방식인 Dedicated,Pooled VM에서는 변경이 불가능하게 되어있습니다.
 * 이를 가능하기 위해 SQL 쿼리를 이용하여 UUID 및 Hypervisor 컨넥션등을 강제로 교체할 수 있습니다.
