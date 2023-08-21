@@ -84,6 +84,8 @@ Citrix VDI 관련 UUID 변경 툴
 - 참고: 파일경로 입력이 띄어쓰기가 있으면 경로에 "C:\Users\user\Desktop\MVCCSV.csv" 첫글자와 끝글자에 쌍따옴표" 을 붙여서 진행
 - 공란으로 비운 상태로 엔터만 입력 시 기본경로인 "CSV\MVCCSV.csv" 으로 자동 지정, 이건 해당 파일이 있을시만 해당
 ![image](https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/d2826dcf-cc59-4080-a3bd-e4207bfeaeeb)
+<img width="479" alt="image" src="https://github.com/LKdiol/Citrix-CVAD-VDI-UUID-Changer/assets/126259075/b439f08b-e43b-4698-b76f-46f786d90696">
+
 
 ## 3) 최종 결과
 - Citrix Studio상 컨넥션만 확인이 가능 
